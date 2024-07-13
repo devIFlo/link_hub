@@ -46,30 +46,13 @@ namespace LinkHub.Controllers
 					}
 
                     ModelState.AddModelError(string.Empty, "Login Inválido");
+					return View(model);
 				}
 
                 if (_ldapService.IsAuthenticated(model.Username, model.Password))
                 {
                     var user = await _userManager.FindByNameAsync(model.Username);
-                    if (user == null)
-                    {
-                        user = new IdentityUser
-                        {
-                            UserName = model.Username,
-                            Email = model.Username,
-                        };
-
-                        var result = await _userManager.CreateAsync(user);
-                        if (!result.Succeeded)
-                        {
-                            foreach (var error in result.Errors)
-                            {
-                                ModelState.AddModelError(string.Empty, error.Description);
-                            }
-                            return View(model);
-                        }
-                    }
-
+                    
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
                 }

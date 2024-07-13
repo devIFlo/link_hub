@@ -30,7 +30,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddControllersWithViews();
 
-
+builder.Services.AddScoped<ISeedUserRoleInitial, SeedUserRoleInitial>();
 
 var app = builder.Build();
 
@@ -47,6 +47,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+await CreateUserProfilesAsync(app);
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -55,3 +57,15 @@ app.MapControllerRoute(
     pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();
+
+async Task CreateUserProfilesAsync(WebApplication app)
+{
+    var scopedFactory = app.Services.GetService<IServiceScopeFactory>();
+
+    using (var scope = scopedFactory.CreateScope())
+    {
+        var service = scope.ServiceProvider.GetService<ISeedUserRoleInitial>();
+        await service.SeedRolesAsync();
+        await service.SeedUsersAsync();
+    }
+}
