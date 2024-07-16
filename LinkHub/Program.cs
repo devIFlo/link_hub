@@ -22,6 +22,8 @@ builder.Services.AddScoped<LdapAuthentication>(provider =>
              builder.Configuration["Ldap:Domain"]
          ));
 
+builder.Services.AddScoped<LdapSyncService>();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 	.AddCookie(options =>
 	{

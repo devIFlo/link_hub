@@ -45,19 +45,24 @@ namespace LinkHub.Controllers
 						return RedirectToAction("Index", "Home");
 					}
 
-                    ModelState.AddModelError(string.Empty, "Login Inválido");
+                    ModelState.AddModelError(string.Empty, "Usuário ou senha incorreto.");
 					return View(model);
 				}
 
                 if (_ldapService.IsAuthenticated(model.Username, model.Password))
                 {
                     var user = await _userManager.FindByNameAsync(model.Username);
-                    
+                    if (user == null)
+                    {
+                        ModelState.AddModelError(string.Empty, "Usuário não tem permissão para acessar o sistema.");
+                        return View(model);
+                    }
+
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
                 }
 
-                ModelState.AddModelError("login.Invalid", "Usuário ou senha incorreto.");
+                ModelState.AddModelError(string.Empty, "Usuário ou senha incorreto.");
             }
 
             return View(model);
