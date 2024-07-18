@@ -1,4 +1,5 @@
-﻿using LinkHub.Services;
+﻿using LinkHub.Models;
+using LinkHub.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,10 +9,10 @@ namespace LinkHub.Controllers
     [Authorize(Roles = "Admin")]
     public class UsersController : Controller
 	{
-		private readonly UserManager<IdentityUser> _userManager;
+		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly LdapSyncService _ldapSyncService;
 
-		public UsersController(UserManager<IdentityUser> userManager,
+		public UsersController(UserManager<ApplicationUser> userManager,
 			LdapSyncService ldapSyncService)
 		{
 			_userManager = userManager;

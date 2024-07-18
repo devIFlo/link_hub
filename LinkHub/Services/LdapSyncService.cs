@@ -7,12 +7,12 @@ namespace LinkHub.Services
 {
 	public class LdapSyncService
 	{
-		private readonly UserManager<IdentityUser> _userManager;
+		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly IConfiguration _configuration;
 		private readonly ILogger<LdapSyncService> _logger;
 
 		public LdapSyncService(
-			UserManager<IdentityUser> userManager,
+			UserManager<ApplicationUser> userManager,
 			IConfiguration configuration,
 			ILogger<LdapSyncService> logger)
 		{
@@ -32,15 +32,12 @@ namespace LinkHub.Services
 
 				if (identityUser == null)
 				{
-					// Create new user in Identity
-					var newUser = new IdentityUser
-					{
+					var newUser = new ApplicationUser
+                    {
 						UserName = ldapUser.UserName,
 						Email = ldapUser.Email,
-						// FirstName = ldapUser.FirstName,
-						// LastName = ldapUser.LastName,
-						// CreatedDate = DateTime.UtcNow,
-						// IsActive = true
+						FirstName = ldapUser.FirstName,
+						LastName = ldapUser.LastName
 					};
 
 					var result = await _userManager.CreateAsync(newUser);
@@ -51,23 +48,22 @@ namespace LinkHub.Services
 				}
 				else
 				{
-					// Update existing user if necessary
 					bool isUpdated = false;
 					if (identityUser.Email != ldapUser.Email)
 					{
 						identityUser.Email = ldapUser.Email;
 						isUpdated = true;
 					}
-					// if (identityUser.FirstName != ldapUser.FirstName)
-					// {
-					//     identityUser.FirstName = ldapUser.FirstName;
-					//     isUpdated = true;
-					// }
-					// if (identityUser.LastName != ldapUser.LastName)
-					// {
-					//     identityUser.LastName = ldapUser.LastName;
-					//     isUpdated = true;
-					// }
+					if (identityUser.FirstName != ldapUser.FirstName)
+					{
+						identityUser.FirstName = ldapUser.FirstName;
+						isUpdated = true;
+					}
+					if (identityUser.LastName != ldapUser.LastName)
+					{
+						identityUser.LastName = ldapUser.LastName;
+					    isUpdated = true;
+					}
 
 					if (isUpdated)
 					{
@@ -106,8 +102,8 @@ namespace LinkHub.Services
 				{
 					UserName = entry.Attributes["sAMAccountName"]?[0]?.ToString(),
 					Email = entry.Attributes["mail"]?[0]?.ToString(),
-					// FirstName = entry.Attributes["givenName"]?[0]?.ToString(),
-					// LastName = entry.Attributes["sn"]?[0]?.ToString()
+					FirstName = entry.Attributes["givenName"]?[0]?.ToString(),
+					LastName = entry.Attributes["sn"]?[0]?.ToString()
 				};
 
 				ldapUsers.Add(ldapUser);
