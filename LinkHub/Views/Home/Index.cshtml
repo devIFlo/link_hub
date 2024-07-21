@@ -1,8 +1,50 @@
-﻿@{
+﻿@model IEnumerable<LinkHub.Models.Link>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-teste-tab" data-bs-toggle="tab" data-bs-target="#nav-teste" type="button" role="tab" aria-controls="nav-teste" aria-selected="true">
+                TESTE
+            </button>
+
+            @foreach (var tab in (IEnumerable<Category>)ViewBag.Categories) //Gera as abas de cada categoria.
+            {
+                <button class="nav-link" id="nav-@tab.Name-tab" data-bs-toggle="tab" data-bs-target="#nav-@tab.Name" type="button" role="tab" aria-controls="nav-@tab.Name" aria-selected="false">
+                    @tab.Name
+                </button>
+            }
+        </div>
+    </nav>
+    <br />
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-teste" role="tabpanel" aria-labelledby="nav-teste-tab">...</div>
+
+        @foreach (var tab in (IEnumerable<Category>)ViewBag.Categories) //Gera o conteúdo das abas.
+        {
+            <div class="tab-pane fade" id="nav-@tab.Name" role="tabpanel" aria-labelledby="nav-@tab.Name-tab">
+                <div class="row row-cols-1 row-cols-md-5 g-4">
+                    @foreach (var tabContent in Model)
+                    {
+                        if (tab.Name == tabContent.Category.Name)
+                        {
+                            <div class="col">
+                                <div class="card h-100 border-success text-success">
+                                    <a href="@tabContent.Url" target="_blank"><img src="/image/@tabContent.FileName" class="card-img-top" alt="..."></a>
+                                    <hr>
+                                    <div class="card-body">
+                                        <h5 class="card-title">@tabContent.Name</h5>
+                                        <p class="card-text">@tabContent.Description</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    </div>
 </div>
