@@ -1,8 +1,40 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// Write your JavaScript code.
-
-$(document).ready(function () {
+﻿$(document).ready(function () {
     $('#data-table').DataTable();
+
+    $('.btn-service-add').click(function () {
+        $.ajax({
+            type: 'GET',
+            url: '/Links/Create/',
+            success: function (result) {
+                $("#serviceCreate").html(result);
+                $('#modalServicesCreate').modal('show');
+            }
+        });
+    });
+
+    $('.btn-service-edit').click(function () {
+        var serviceId = $(this).attr('service-id');
+
+        $.ajax({
+            type: 'GET',
+            url: '/Links/Edit/' + serviceId,
+            success: function (result) {
+                $("#serviceEdit").html(result);
+                $('#modalServicesEdit').modal('show');
+            }
+        });
+    });
+
+    $('.btn-service-remove').click(function () {
+        var serviceId = $(this).attr('service-id');
+
+        $.ajax({
+            type: 'GET',
+            url: '/Links/Delete/' + serviceId,
+            success: function (result) {
+                $("#serviceDelete").html(result);
+                $('#modalServicesDelete').modal('show');
+            }
+        });
+    });
 });

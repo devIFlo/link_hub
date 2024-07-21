@@ -1,5 +1,6 @@
 using LinkHub.Data;
 using LinkHub.Models;
+using LinkHub.Repositories;
 using LinkHub.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -24,6 +25,9 @@ builder.Services.AddScoped<LdapAuthentication>(provider =>
          ));
 
 builder.Services.AddScoped<LdapSyncService>();
+builder.Services.AddScoped<ImageStorage>();
+builder.Services.AddScoped<ILinkRepository, LinkRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 	.AddCookie(options =>
