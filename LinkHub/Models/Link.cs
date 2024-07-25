@@ -15,6 +15,7 @@ namespace LinkHub.Models
         public string? Description { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
+        [Display(Name = "Link")]
         public string Url { get; set; } = null!;
 
         public Category? Category { get; set; }
