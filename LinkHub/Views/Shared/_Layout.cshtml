@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/LinkHub.styles.css" asp-append-version="true" />
     <link href="~/lib/DataTables/datatables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <header>
@@ -21,22 +22,31 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Links" asp-action="Index">Links</a>
+                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">
+                                <i class="fas fa-home"></i> Home
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Categories" asp-action="Index">Categorias</a>
+                            <a class="nav-link text-white" asp-area="" asp-controller="Links" asp-action="Index">
+                                <i class="fas fa-link"></i> Links
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Categories" asp-action="Index">
+                                <i class="fas fa-list"></i> Categorias
+                            </a>
                         </li>                        
                         <partial name="_LoginAdmin.cshtml" />
                     </ul>
                     <ul class="navbar-nav">
+                        <li class="navbar-text text-white">
+                            @User.Identity.Name
+                        </li>
                         <li class="nav-item text-white">
-                            <form method="post" asp-controller="Account" asp-action="Logout">
-                                @User.Identity.Name
-                                <button type="submit" class="btn text-white">
-                                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2" />
-                                    </svg>
-                                </button>
+                            <form id="logout" method="post" asp-controller="Account" asp-action="Logout">
+                                <a href="#" class="nav-link text-white" onclick="document.getElementById('logout').submit();">
+                                    <i class="fas fa-sign-out-alt"></i> Sair
+                                </a>
                             </form>
                         </li>
                     </ul>
@@ -51,7 +61,7 @@
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
+        <div class="container text-center">
             &copy; 2024 - LinkHub - IFSertãoPE Campus Floresta
         </div>
     </footer>

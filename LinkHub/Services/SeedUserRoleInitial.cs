@@ -34,7 +34,9 @@ namespace LinkHub.Services
                 ApplicationUser user = new ApplicationUser();
 				user.UserName = "admin";
 				user.NormalizedUserName = "ADMIN";
-				user.LockoutEnabled = false;
+				user.FirstName = "Administrador";
+				user.Email = "admin@admin.com";
+                user.LockoutEnabled = false;
 				user.SecurityStamp = Guid.NewGuid().ToString();
 
 				IdentityResult result = await _userManager.CreateAsync(user, "Admin@2024");

@@ -42,3 +42,21 @@ body {
 .nav-tabs .nav-link:hover {
     color: #029b1d;
 }
+
+.navbar-nav .nav-item {
+    border-right: 1px solid rgba(255, 255, 255, 0.3) !important; /* Borda mais sutil com transparência */
+}
+
+.navbar-nav .nav-item:last-child {
+    border-right: none !important; /* Borda mais sutil com transparência */
+}
+
+@media (max-width: 767px) {
+    .navbar-nav .nav-item {
+        border-right: none !important; /* Remove as bordas em telas menores */
+    }
+
+    .navbar-nav .navbar-text {
+        display: none !important;
+    }
+}
