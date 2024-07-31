@@ -44,16 +44,20 @@ body {
 }
 
 .navbar-nav .nav-item {
-    border-right: 1px solid rgba(255, 255, 255, 0.3) !important; /* Borda mais sutil com transparência */
+    border-right: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.navbar-nav .nav-item .nav-link:hover {
+    color: #6fe090 !important;
 }
 
 .navbar-nav .nav-item:last-child {
-    border-right: none !important; /* Borda mais sutil com transparência */
+    border-right: none !important;
 }
 
 @media (max-width: 767px) {
     .navbar-nav .nav-item {
-        border-right: none !important; /* Remove as bordas em telas menores */
+        border-right: none !important;
     }
 
     .navbar-nav .navbar-text {
