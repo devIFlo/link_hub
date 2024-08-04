@@ -1,0 +1,24 @@
+﻿@model Page
+
+<div class="modal-header">
+    <h5 class="modal-title">Confirma a remoção da página abaixo?</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <h6>@Html.DisplayNameFor(model => model.Name)</h6>
+                <p>@Html.DisplayFor(model => model.Name)</p>
+                <h6>@Html.DisplayNameFor(model => model.Description)</h6>
+                <p>@Html.DisplayFor(model => model.Description)</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+    <form asp-action="Delete">
+        <input type="submit" value="Remover" class="btn btn-danger" />
+    </form>
+</div>

@@ -1,38 +1,62 @@
 ﻿using LinkHub.Models;
 using LinkHub.Repositories;
+using LinkHub.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinkHub.Controllers
 {
+    [Authorize]
     public class CategoriesController : Controller
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IPageRepository _pageRepository;
 
-        public CategoriesController(ICategoryRepository categoryRepository)
+        public CategoriesController(ICategoryRepository categoryRepository, IPageRepository pageRepository)
         {
             _categoryRepository = categoryRepository;
+            _pageRepository = pageRepository;
         }
 
         // GET: Categories
         public IActionResult Index()
         {
-            List<Category> categories = _categoryRepository.GetCategories();
+            var categories = _categoryRepository.GetCategories();
             return View(categories);
         }
 
         // GET: Categories/Create
         public IActionResult Create()
         {
-            return View();
+            var pages = _pageRepository.GetPages();
+            var categoryView = new CategoryViewModel
+            {
+                Pages = pages
+            };
+
+            return View(categoryView);
         }
 
         // POST: Categories/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Category category)
+        public async Task<IActionResult> Create(CategoryViewModel categoryView)
         {
-            await _categoryRepository.Add(category);
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                var category = new Category
+                {
+                    Name = categoryView.Name,
+                    PageId = categoryView.SelectedPageId
+                };
+
+                await _categoryRepository.Add(category);
+                return RedirectToAction("Index");
+            }
+
+            categoryView.Pages = _pageRepository.GetPages();
+            return View(categoryView);
         }
 
         // GET: Categories/Edit

@@ -1,8 +1,7 @@
-using LinkHub.Data;
 using LinkHub.Models;
+using LinkHub.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace LinkHub.Controllers
@@ -10,19 +9,32 @@ namespace LinkHub.Controllers
 	[Authorize]
 	public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ILinkRepository _linkRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IPageRepository _pageRepository;
 
-        public HomeController(ApplicationDbContext context)
+        public HomeController(ILinkRepository linkRepository, ICategoryRepository categoryRepository, IPageRepository pageRepository)
         {
-            _context = context;
+            _linkRepository = linkRepository;
+            _categoryRepository = categoryRepository;
+            _pageRepository = pageRepository;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            ViewBag.Categories = await _context.Categories.ToListAsync();
-            return _context.Links != null ?
-                        View(await _context.Links.ToListAsync()) :
-                        Problem("Entity set 'ITServicesContext.Service' is null.");
+            var pages = _pageRepository.GetPages();
+            return View(pages);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("/Home/Link/{page}")]
+        public IActionResult Link(string page)
+        {
+            ViewBag.Categories = _categoryRepository.GetCategories().Where(c => c.Page.Name == page);
+            ViewData["Page"] = page;
+
+            var links = _linkRepository.GetLinks().Where(l => l.Category.Page.Name == page);
+            return View(links);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

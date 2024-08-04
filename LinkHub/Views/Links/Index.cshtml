@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<LinkHub.Models.Link>
 
 @{
-    ViewData["Title"] = "Lista de Links";
+    ViewData["Title"] = "Links";
 }
 
 <h1 class="text-center">@ViewData["Title"]</h1>
 
 <p class="text-end">
-    <a href="javascript:" class="btn btn-success btn-service-add">
+    <a href="javascript:" class="btn btn-success btn-link-add">
         <i class="fas fa-plus"></i> Adicionar
     </a>
 </p>
@@ -29,22 +29,22 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var service in Model)
+            @foreach (var link in Model)
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => service.Name)
+                        @Html.DisplayFor(modelItem => link.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => service.Description)
+                        @Html.DisplayFor(modelItem => link.Description)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => service.Url)
+                        @Html.DisplayFor(modelItem => link.Url)
                     </td>
                     <td class="text-center">
                         <div class="btn-group" role="group">
-                            <a href="javascript:" service-id="@service.Id" class="btn btn-success btn-service-edit">Editar</a>
-                            <a href="javascript:" service-id="@service.Id" class="btn btn-danger btn-service-remove">Remover</a>
+                            <a href="javascript:" link-id="@link.Id" class="btn btn-success btn-link-edit">Editar</a>
+                            <a href="javascript:" link-id="@link.Id" class="btn btn-danger btn-link-remove">Remover</a>
                         </div>
                     </td>
                 </tr>  
@@ -53,29 +53,29 @@
     </table>
 </div>
 
-@* Modal Service Create *@
-<div class="modal fade" id="modalServicesCreate" tabindex="-1" role="dialog">
+@* Modal Link Create *@
+<div class="modal fade" id="modalLinkCreate" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div id="serviceCreate"></div>
+            <div id="linkCreate"></div>
         </div>
     </div>
 </div>
 
-@* Modal Service Edit *@
-<div class="modal fade" id="modalServicesEdit" tabindex="-1" role="dialog">
+@* Modal Link Edit *@
+<div class="modal fade" id="modalLinkEdit" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div id="serviceEdit"></div>
+            <div id="linkEdit"></div>
         </div>
     </div>
 </div>
 
-@* Modal Service Delete *@
-<div class="modal fade" id="modalServicesDelete" tabindex="-1" role="dialog">
+@* Modal Link Delete *@
+<div class="modal fade" id="modalLinkDelete" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div id="serviceDelete"></div>
+            <div id="linkDelete"></div>
         </div>
     </div>
 </div>

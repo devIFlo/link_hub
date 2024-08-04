@@ -7,13 +7,11 @@ namespace LinkHub.Repositories
     public class LinkRepository : ILinkRepository
     {
         private readonly ApplicationDbContext _context;
-        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ImageStorage _imageStorage;
 
-        public LinkRepository(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, ImageStorage imageStorage)
+        public LinkRepository(ApplicationDbContext context, ImageStorage imageStorage)
         {
             _context = context;
-            _webHostEnvironment = webHostEnvironment;
             _imageStorage = imageStorage;
         }
 

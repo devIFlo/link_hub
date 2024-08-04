@@ -28,6 +28,7 @@ builder.Services.AddScoped<LdapSyncService>();
 builder.Services.AddScoped<ImageStorage>();
 builder.Services.AddScoped<ILinkRepository, LinkRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IPageRepository, PageRepository>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 	.AddCookie(options =>

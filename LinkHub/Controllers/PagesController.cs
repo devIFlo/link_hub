@@ -6,75 +6,75 @@ using Microsoft.AspNetCore.Mvc;
 namespace LinkHub.Controllers
 {
     [Authorize]
-    public class LinksController : Controller
+    public class PagesController : Controller
     {
-        private readonly ILinkRepository _linkRepository;
+        private readonly IPageRepository _pageRepository;
 
-        public LinksController(ILinkRepository linkRepository)
+        public PagesController(IPageRepository pageRepository)
         {
-            _linkRepository = linkRepository;
+            _pageRepository = pageRepository;
         }
 
         public IActionResult Index()
         {
-            List<Link> links = _linkRepository.GetLinks();
-            return View(links);
+            var pages = _pageRepository.GetPages();
+            return View(pages);
         }
 
         public IActionResult Create()
         {
-            ViewBag.Categories = _linkRepository.GetCategories();
-
             return PartialView("_Create");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Link service)
+        public async Task<IActionResult> Create(Page page)
         {
-            await _linkRepository.Add(service);
+            if (ModelState.IsValid)
+            {
+                await _pageRepository.Add(page);
+                return RedirectToAction("Index");
+            }
 
-            return RedirectToAction("Index");
+            return View();
         }
 
         public IActionResult Edit(int id)
         {
-            ViewBag.Categories = _linkRepository.GetCategories();
-
-            Link link = _linkRepository.GetLink(id);
-            if (link == null)
+            Page page = _pageRepository.GetPage(id);
+            if (page == null)
             {
                 return NotFound();
             }
 
-            return PartialView("_Edit", link);
+            return PartialView("_Edit", page);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Link link)
+        public async Task<IActionResult> Edit(Page page)
         {
-            await _linkRepository.Update(link);
+            await _pageRepository.Update(page);
 
             return RedirectToAction("Index");
         }
 
         public IActionResult Delete(int id)
         {
-            Link link = _linkRepository.GetLink(id);
-            if (link == null)
+            Page page = _pageRepository.GetPage(id);
+            if(page == null)
             {
                 return NotFound();
             }
 
-            return PartialView("_Delete", link);
+            return PartialView("_Delete", page);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            _linkRepository.Delete(id);
+            _pageRepository.Delete(id);
             return RedirectToAction("Index");
         }
     }

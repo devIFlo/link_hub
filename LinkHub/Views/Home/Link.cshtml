@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Link>
+
+@{
+    Layout = "_LayoutLinks";
+    ViewData["Title"] = "Links";
+    int contTab = 0;
+    int contTabContent = 0;
+}
+
+<div class="text-center">
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            @foreach (var tab in (IEnumerable<Category>)ViewBag.Categories) //Gera as abas de cada categoria.
+            {
+                string active = contTab == 0 ? "active" : "";
+
+                <button class="nav-link @active" id="nav-@tab.Name-tab" data-bs-toggle="tab" data-bs-target="#nav-@tab.Name" type="button" role="tab" aria-controls="nav-@tab.Name" aria-selected="false">
+                    @tab.Name
+                </button>
+
+                contTab++;
+            }
+        </div>
+    </nav>
+    <br />
+    <div class="tab-content" id="nav-tabContent">
+        @foreach (var tab in (IEnumerable<Category>)ViewBag.Categories) //Gera o conteúdo das abas.
+        {
+            string active = contTabContent == 0 ? "show active" : "";
+
+            <div class="tab-pane fade @active" id="nav-@tab.Name" role="tabpanel" aria-labelledby="nav-@tab.Name-tab">
+                <div class="row row-cols-1 row-cols-md-5 g-4">
+                    @foreach (var tabContent in Model)
+                    {
+                        if (tab.Name == tabContent.Category.Name)
+                        {
+                            <div class="col">
+                                <div class="card h-100 border-success text-success">
+                                    <a href="@tabContent.Url" target="_blank"><img src="/images/@tabContent.FileName" class="card-img-top border-bottom" alt="..."></a>
+                                    <div class="card-body">
+                                        <h5 class="card-title">@tabContent.Name</h5>
+                                        <p class="card-text">@tabContent.Description</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            contTabContent++;
+        }
+    </div>
+</div>

@@ -1,5 +1,6 @@
 ﻿using LinkHub.Data;
 using LinkHub.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace LinkHub.Repositories
 {
@@ -19,7 +20,7 @@ namespace LinkHub.Repositories
 
         public List<Category> GetCategories()
         {
-            return _context.Categories.ToList();
+            return _context.Categories.Include(c => c.Page).ToList();
         }
 
         public async Task<Category> Add(Category category)
