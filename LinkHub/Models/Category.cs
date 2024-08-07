@@ -12,6 +12,7 @@ namespace LinkHub.Models
 
         public int PageId { get; set; }
 
+        [Display(Name = "Página")]
         [ForeignKey("PageId")]
         public Page Page { get; set; }
 

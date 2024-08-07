@@ -12,8 +12,8 @@ namespace LinkHub.ViewModels
         [Display(Name = "Nome")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Selecione um grupo.")]
-        [Display(Name = "Grupo")]
+        [Required(ErrorMessage = "Selecione um página.")]
+        [Display(Name = "Página")]
         public int SelectedPageId { get; set; }
 
         public IEnumerable<Page>? Pages { get; set; }

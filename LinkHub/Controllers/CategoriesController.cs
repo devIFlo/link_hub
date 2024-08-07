@@ -2,7 +2,6 @@
 using LinkHub.Repositories;
 using LinkHub.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinkHub.Controllers
@@ -19,14 +18,12 @@ namespace LinkHub.Controllers
             _pageRepository = pageRepository;
         }
 
-        // GET: Categories
         public IActionResult Index()
         {
             var categories = _categoryRepository.GetCategories();
             return View(categories);
         }
 
-        // GET: Categories/Create
         public IActionResult Create()
         {
             var pages = _pageRepository.GetPages();
@@ -35,10 +32,9 @@ namespace LinkHub.Controllers
                 Pages = pages
             };
 
-            return View(categoryView);
+            return PartialView("_Create", categoryView);
         }
 
-        // POST: Categories/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CategoryViewModel categoryView)
@@ -59,19 +55,25 @@ namespace LinkHub.Controllers
             return View(categoryView);
         }
 
-        // GET: Categories/Edit
         public IActionResult Edit(int id)
         {
-            Category category = _categoryRepository.GetCategory(id);
+            var category = _categoryRepository.GetCategory(id);
             if (category == null)
             {
                 return NotFound();
             }
 
-            return View(category);
+            var pages = _pageRepository.GetPages();
+            var categoryView = new CategoryViewModel
+            {
+                Name = category.Name,
+                Pages = pages,
+                SelectedPageId = category.PageId
+            };
+
+            return PartialView("_Edit", categoryView);
         }
 
-        // POST: Categories/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Category category)
@@ -81,7 +83,6 @@ namespace LinkHub.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET: Categories/Delete
         public IActionResult Delete(int id)
         {
             Category category = _categoryRepository.GetCategory(id);
@@ -90,10 +91,9 @@ namespace LinkHub.Controllers
                 return NotFound();
             }
 
-            return View(category);
+            return PartialView("_Delete", category);
         }
 
-        // POST: Categories/Delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)

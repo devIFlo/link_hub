@@ -7,7 +7,7 @@
 <h1 class="text-center">@ViewData["Title"]</h1>
 
 <p class="text-end">
-    <a asp-action="Create" class="btn btn-success">
+    <a href="javascript:" class="btn btn-success btn-category-add">
         <i class="fas fa-plus"></i> Adicionar
     </a>
 </p>
@@ -19,7 +19,7 @@
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Page.Name)
+                    @Html.DisplayNameFor(model => model.Page)
                 </th>
                 <th>
                     #
@@ -38,12 +38,39 @@
                     </td>
                     <td class="text-end">
                         <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success">Editar</a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Remover</a>
+                            <a href="javascript:" category-id="@item.Id" class="btn btn-success btn-category-edit">Editar</a>
+                            <a href="javascript:" category-id="@item.Id" class="btn btn-danger btn-category-remove">Remover</a>
                         </div>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+</div>
+
+@* Modal Category Create *@
+<div class="modal fade" id="modalCategoryCreate" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div id="categoryCreate"></div>
+        </div>
+    </div>
+</div>
+
+@* Modal Category Edit *@
+<div class="modal fade" id="modalCategoryEdit" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div id="categoryEdit"></div>
+        </div>
+    </div>
+</div>
+
+@* Modal Category Delete *@
+<div class="modal fade" id="modalCategoryDelete" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div id="categoryDelete"></div>
+        </div>
+    </div>
 </div>

@@ -1,5 +1,9 @@
 ﻿$(document).ready(function () {
-    $('#data-table').DataTable();
+    $('#data-table').DataTable({
+        language: {
+            url: '/lib/DataTables/pt-BR.json'
+        }
+    });
 });
 
 function previewImage(event) {
@@ -47,6 +51,45 @@ $('.btn-link-remove').click(function () {
         success: function (result) {
             $("#linkDelete").html(result);
             $('#modalLinkDelete').modal('show');
+        }
+    });
+});
+
+
+/* Modal da view Categories */
+$('.btn-category-add').click(function () {
+    $.ajax({
+        type: 'GET',
+        url: '/Categories/Create/',
+        success: function (result) {
+            $("#categoryCreate").html(result);
+            $('#modalCategoryCreate').modal('show');
+        }
+    });
+});
+
+$('.btn-category-edit').click(function () {
+    var categoryId = $(this).attr('category-id');
+
+    $.ajax({
+        type: 'GET',
+        url: '/Categories/Edit/' + categoryId,
+        success: function (result) {
+            $("#categoryEdit").html(result);
+            $('#modalCategoryEdit').modal('show');
+        }
+    });
+});
+
+$('.btn-category-remove').click(function () {
+    var categoryId = $(this).attr('category-id');
+
+    $.ajax({
+        type: 'GET',
+        url: '/Categories/Delete/' + categoryId,
+        success: function (result) {
+            $("#categoryDelete").html(result);
+            $('#modalCategoryDelete').modal('show');
         }
     });
 });
