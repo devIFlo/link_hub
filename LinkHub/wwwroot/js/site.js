@@ -132,3 +132,16 @@ $('.btn-page-remove').click(function () {
         }
     });
 });
+
+
+/* Modal da view Users */
+$('.btn-user-settings').click(function () {
+    $.ajax({
+        type: 'GET',
+        url: '/Users/Settings/',
+        success: function (result) {
+            $("#userSettings").html(result);
+            $('#modalUserSettings').modal('show');
+        }
+    });
+});

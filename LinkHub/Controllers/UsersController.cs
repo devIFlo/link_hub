@@ -1,8 +1,10 @@
 ﻿using LinkHub.Models;
+using LinkHub.Repositories;
 using LinkHub.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace LinkHub.Controllers
 {
@@ -11,15 +13,16 @@ namespace LinkHub.Controllers
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly LdapSyncService _ldapSyncService;
+		private readonly ILdapSettingsRepository _ldapSettingsRepository;
 
 		public UsersController(UserManager<ApplicationUser> userManager,
-			LdapSyncService ldapSyncService)
+			LdapSyncService ldapSyncService, ILdapSettingsRepository ldapSettingsRepository)
 		{
 			_userManager = userManager;
 			_ldapSyncService = ldapSyncService;
+			_ldapSettingsRepository = ldapSettingsRepository;
 		}
 
-		[HttpGet]
 		public IActionResult Index()
 		{
 			var users = _userManager.Users;
@@ -33,7 +36,37 @@ namespace LinkHub.Controllers
 			return RedirectToAction("Index", "Users");
 		}
 
+		public IActionResult Settings()
+		{
+			LdapSettings ldapSettings = _ldapSettingsRepository.GetLdapSettings();
+			if (ldapSettings == null)
+			{
+                return PartialView("_Settings");
+            }
+
+			return PartialView("_Settings", ldapSettings);			
+		}
+
 		[HttpPost]
+		public async Task<IActionResult> Settings(LdapSettings ldapSettings)
+		{
+			if (ModelState.IsValid)
+			{
+                LdapSettings ldapSettingsDB = _ldapSettingsRepository.GetLdapSettings();
+				if (ldapSettingsDB == null)
+				{
+                    await _ldapSettingsRepository.Add(ldapSettings);
+                    return RedirectToAction("Index");
+                }
+
+				await _ldapSettingsRepository.Update(ldapSettings);
+                return RedirectToAction("Index");
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
 		public async Task<IActionResult> DeleteUser(string id)
 		{
 			var user = await _userManager.FindByIdAsync(id);

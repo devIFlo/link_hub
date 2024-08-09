@@ -1,28 +1,27 @@
-﻿using System.DirectoryServices.Protocols;
+﻿using LinkHub.Repositories;
+using System.DirectoryServices.Protocols;
 using System.Net;
 
 namespace LinkHub.Services
 {
     public class LdapAuthentication
     {
-        private readonly string _ldapHost;
-        private readonly int _ldapPort;
-        private readonly string _ldapDomain;
+        private readonly ILdapSettingsRepository _settingsRepository;
 
-        public LdapAuthentication(string ldapHost, int ldapPort, string ldapDomain)
+        public LdapAuthentication(ILdapSettingsRepository settingsRepository)
         {
-            _ldapHost = ldapHost;
-            _ldapPort = ldapPort;
-            _ldapDomain = ldapDomain;
+            _settingsRepository = settingsRepository;
         }
 
         public bool IsAuthenticated(string username, string password)
         {
+            var ldapSettings = _settingsRepository.GetLdapSettings();
+
             try
             {
-                using (LdapConnection ldapConnection = new LdapConnection(new LdapDirectoryIdentifier(_ldapHost, _ldapPort)))
+                using (LdapConnection ldapConnection = new LdapConnection(new LdapDirectoryIdentifier(ldapSettings.Host, ldapSettings.Port)))
                 {
-                    ldapConnection.Bind(new NetworkCredential(username, password, _ldapDomain));
+                    ldapConnection.Bind(new NetworkCredential(username, password, ldapSettings.Domain));
                     return true;
                 }
             }

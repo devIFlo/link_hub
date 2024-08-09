@@ -13,22 +13,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseMySQL(builder.Configuration.GetConnectionString("LinkHubContext")));
 
-builder.Services.AddIdentity <ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<LdapAuthentication>(provider =>
-         new LdapAuthentication(
-             builder.Configuration["Ldap:Host"],
-             int.Parse(builder.Configuration["Ldap:Port"]),
-             builder.Configuration["Ldap:Domain"]
-         ));
-
+builder.Services.AddScoped<LdapAuthentication>();
 builder.Services.AddScoped<LdapSyncService>();
 builder.Services.AddScoped<ImageStorage>();
 builder.Services.AddScoped<ILinkRepository, LinkRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IPageRepository, PageRepository>();
+builder.Services.AddScoped<ILdapSettingsRepository, LdapSettingsRepository>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 	.AddCookie(options =>

@@ -7,7 +7,10 @@
 <h1 class="text-center">@ViewData["Title"]</h1>
 
 <form asp-action="SyncLdapUsers" method="post" class="text-end">
-    <button type="submit" class="btn btn-success mt-2">Sincronizar Usuários</button>
+    <button type="submit" class="btn btn-success">Sincronizar Usuários</button>
+    <a href="javascript:" class="btn-user-settings text-success">
+        <i class="fa-solid fa-gear fa-xl"></i>
+    </a>
 </form>
 
 <br />
@@ -40,4 +43,13 @@
             }
         </tbody>
     </table>
+</div>
+
+@* Modal User Settings *@
+<div class="modal fade" id="modalUserSettings" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div id="userSettings"></div>
+        </div>
+    </div>
 </div>

@@ -1,4 +1,5 @@
 ﻿using LinkHub.Models;
+using LinkHub.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System.DirectoryServices.Protocols;
 using System.Net;
@@ -8,17 +9,18 @@ namespace LinkHub.Services
 	public class LdapSyncService
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
-		private readonly IConfiguration _configuration;
 		private readonly ILogger<LdapSyncService> _logger;
+		private readonly ILdapSettingsRepository _ldapSettingsRepository;
 
 		public LdapSyncService(
 			UserManager<ApplicationUser> userManager,
 			IConfiguration configuration,
-			ILogger<LdapSyncService> logger)
+			ILogger<LdapSyncService> logger,
+			ILdapSettingsRepository ldapSettingsRepository)
 		{
 			_userManager = userManager;
-			_configuration = configuration;
 			_logger = logger;
+			_ldapSettingsRepository = ldapSettingsRepository;
 		}
 
 		public async Task SyncUsersAsync()
@@ -80,12 +82,13 @@ namespace LinkHub.Services
 		private List<LdapUser> GetLdapUsers()
 		{
 			var ldapUsers = new List<LdapUser>();
+			var ldapSettings = _ldapSettingsRepository.GetLdapSettings();
 
-			var host = _configuration["Ldap:Host"];
-			var port = int.Parse(_configuration["Ldap:Port"]);
-			var baseDn = _configuration["Ldap:BaseDn"];
-			var userDn = _configuration["Ldap:UserDn"];
-			var password = _configuration["Ldap:Password"];
+            var host = ldapSettings.Host;
+			var port = ldapSettings.Port;
+			var baseDn = ldapSettings.BaseDn;
+            var userDn = ldapSettings.UserDn;
+			var password = ldapSettings.Password;
 
 			var ldapConnection = new LdapConnection(new LdapDirectoryIdentifier(host, port));
 			var networkCredential = new NetworkCredential(userDn, password);

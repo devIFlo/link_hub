@@ -9,6 +9,7 @@ namespace LinkHub.Data
         public DbSet<Link> Links { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Page> Pages { get; set; }
+        public DbSet<LdapSettings> LdapSettings { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

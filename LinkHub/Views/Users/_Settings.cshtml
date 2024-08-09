@@ -1,0 +1,50 @@
+﻿@model LdapSettings
+
+<div class="modal-header">
+    <h5 class="modal-title">Configurações LDAP</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <form enctype="multipart/form-data" asp-action="Settings">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Host" class="control-label"></label>
+                <input asp-for="Host" class="form-control" />
+                <span asp-validation-for="Host" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Port" class="control-label"></label>
+                <input asp-for="Port" class="form-control" />
+                <span asp-validation-for="Port" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Domain" class="control-label"></label>
+                <input asp-for="Domain" class="form-control" />
+                <span asp-validation-for="Domain" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BaseDn" class="control-label"></label>
+                <input asp-for="BaseDn" class="form-control" />
+                <span asp-validation-for="BaseDn" class="text-danger"></span>
+            </div>
+                        <div class="form-group">
+                <label asp-for="UserDn" class="control-label"></label>
+                <input asp-for="UserDn" class="form-control" />
+                <span asp-validation-for="UserDn" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <input type="submit" value="Salvar" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
