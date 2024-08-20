@@ -1,15 +1,20 @@
 ﻿using LinkHub.Data;
 using LinkHub.Models;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace LinkHub.Repositories
 {
     public class LdapSettingsRepository : ILdapSettingsRepository
     {
         private readonly ApplicationDbContext _context;
+        private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly IDataProtector _protector;
 
-        public LdapSettingsRepository(ApplicationDbContext context)
+        public LdapSettingsRepository(ApplicationDbContext context, IDataProtectionProvider dataProtectionProvider)
         {
             _context = context;
+            _dataProtectionProvider = dataProtectionProvider;
+            _protector = _dataProtectionProvider.CreateProtector("LdapSettingsPasswordProtector");
         }
 
         public LdapSettings GetLdapSettings()
@@ -19,6 +24,8 @@ namespace LinkHub.Repositories
 
         public async Task<LdapSettings> Add(LdapSettings ldapSettings)
         {
+            ldapSettings.EncryptPassword(_protector);
+
             _context.LdapSettings.Add(ldapSettings);
             await _context.SaveChangesAsync();
 
@@ -35,6 +42,8 @@ namespace LinkHub.Repositories
             ldapSettingsDB.Domain = ldapSettings.Domain;
             ldapSettingsDB.UserDn = ldapSettings.UserDn;
             ldapSettingsDB.Password = ldapSettings.Password;
+
+            ldapSettingsDB.EncryptPassword(_protector);
 
             _context.LdapSettings.Update(ldapSettingsDB);
             await _context.SaveChangesAsync();

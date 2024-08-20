@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.DataProtection;
+using System.ComponentModel.DataAnnotations;
 
 namespace LinkHub.Models
 {
@@ -20,5 +21,15 @@ namespace LinkHub.Models
         [DataType(DataType.Password)]
         [Display(Name = "Senha")]
         public string Password { get; set; }
+
+        public void EncryptPassword(IDataProtector protector)
+        {
+            Password = protector.Protect(Password);
+        }
+
+        public string DecryptPassword(IDataProtector protector)
+        {
+            return protector.Unprotect(Password);
+        }
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LinkHub.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class PagesController : Controller
     {
         private readonly IPageRepository _pageRepository;

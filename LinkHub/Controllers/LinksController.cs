@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LinkHub.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin, Editor")]
     public class LinksController : Controller
     {
         private readonly ILinkRepository _linkRepository;

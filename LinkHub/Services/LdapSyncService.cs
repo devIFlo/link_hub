@@ -1,5 +1,6 @@
 ﻿using LinkHub.Models;
 using LinkHub.Repositories;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using System.DirectoryServices.Protocols;
 using System.Net;
@@ -11,19 +12,21 @@ namespace LinkHub.Services
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly ILogger<LdapSyncService> _logger;
 		private readonly ILdapSettingsRepository _ldapSettingsRepository;
+        private readonly IDataProtector _protector;
 
-		public LdapSyncService(
+        public LdapSyncService(
 			UserManager<ApplicationUser> userManager,
-			IConfiguration configuration,
 			ILogger<LdapSyncService> logger,
-			ILdapSettingsRepository ldapSettingsRepository)
+			ILdapSettingsRepository ldapSettingsRepository,
+            IDataProtectionProvider dataProtectionProvider)
 		{
 			_userManager = userManager;
 			_logger = logger;
 			_ldapSettingsRepository = ldapSettingsRepository;
-		}
+            _protector = dataProtectionProvider.CreateProtector("LdapSettingsPasswordProtector");
+        }
 
-		public async Task SyncUsersAsync()
+        public async Task SyncUsersAsync()
 		{
 			var ldapUsers = GetLdapUsers();
 			var identityUsers = _userManager.Users.ToList();
@@ -42,11 +45,13 @@ namespace LinkHub.Services
 						LastName = ldapUser.LastName
 					};
 
-					var result = await _userManager.CreateAsync(newUser);
-					if (!result.Succeeded)
-					{
-						_logger.LogError("Failed to create new user {UserName}: {Errors}", ldapUser.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
-					}
+                    var result = await _userManager.CreateAsync(newUser);
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(newUser, "VIEWER");
+                    }
+    
+					_logger.LogError("Failed to create new user {UserName}: {Errors}", ldapUser.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
 				}
 				else
 				{
@@ -88,9 +93,9 @@ namespace LinkHub.Services
 			var port = ldapSettings.Port;
 			var baseDn = ldapSettings.BaseDn;
             var userDn = ldapSettings.UserDn;
-			var password = ldapSettings.Password;
+			var password = ldapSettings.DecryptPassword(_protector);
 
-			var ldapConnection = new LdapConnection(new LdapDirectoryIdentifier(host, port));
+            var ldapConnection = new LdapConnection(new LdapDirectoryIdentifier(host, port));
 			var networkCredential = new NetworkCredential(userDn, password);
 			ldapConnection.Credential = networkCredential;
 			ldapConnection.Bind();

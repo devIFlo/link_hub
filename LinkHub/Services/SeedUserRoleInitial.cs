@@ -25,7 +25,27 @@ namespace LinkHub.Services
 
 				IdentityResult roleResult = await _roleManager.CreateAsync(role);
 			}
-		}
+
+            if (!await _roleManager.RoleExistsAsync("Editor"))
+            {
+                IdentityRole role = new IdentityRole();
+                role.Name = "Editor";
+                role.NormalizedName = "EDITOR";
+                role.ConcurrencyStamp = Guid.NewGuid().ToString();
+
+                IdentityResult roleResult = await _roleManager.CreateAsync(role);
+            }
+
+            if (!await _roleManager.RoleExistsAsync("Viewer"))
+            {
+                IdentityRole role = new IdentityRole();
+                role.Name = "Viewer";
+                role.NormalizedName = "VIEWER";
+                role.ConcurrencyStamp = Guid.NewGuid().ToString();
+
+                IdentityResult roleResult = await _roleManager.CreateAsync(role);
+            }
+        }
 
 		public async Task SeedUsersAsync()
 		{

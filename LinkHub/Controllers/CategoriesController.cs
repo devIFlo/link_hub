@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LinkHub.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin, Editor")]
     public class CategoriesController : Controller
     {
         private readonly ICategoryRepository _categoryRepository;

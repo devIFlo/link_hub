@@ -65,6 +65,14 @@ body {
     }
 }
 
+.btn-user-settings {
+    color: #03901c;
+}
+
+.btn-user-settings:hover {
+    color: #06742b;
+}
+
 /* Cards da Página Home */
 .card-home {
     background-color: #28a745;
