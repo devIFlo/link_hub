@@ -45,11 +45,11 @@ namespace LinkHub.Repositories
 
         public bool Delete(int id)
         {
-            Category categoryDB = GetCategory(id);
+            Category category = GetCategory(id);
 
-            if (categoryDB == null) throw new Exception("Houve um erro na deleção da Categoria!");
+            if (category == null) throw new Exception("Houve um erro na deleção da Categoria!");
 
-            _context.Categories.Remove(categoryDB);
+            _context.Categories.Remove(category);
             _context.SaveChanges();
 
             return true;

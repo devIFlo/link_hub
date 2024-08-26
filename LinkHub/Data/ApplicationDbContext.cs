@@ -10,6 +10,7 @@ namespace LinkHub.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Page> Pages { get; set; }
         public DbSet<LdapSettings> LdapSettings { get; set; }
+        public DbSet<UserPagePermission> UserPagePermissions { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -24,6 +25,20 @@ namespace LinkHub.Data
                 .WithMany()
                 .HasForeignKey(c => c.PageId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserPagePermission>()
+                .HasOne(upp => upp.User)
+                .WithMany()
+                .HasForeignKey(upp => upp.UserId);
+
+            modelBuilder.Entity<UserPagePermission>()
+                .HasOne(upp => upp.Page)
+                .WithMany()
+                .HasForeignKey(upp => upp.PageId);
+
+            modelBuilder.Entity<UserPagePermission>()
+                .HasIndex(upp => new { upp.UserId, upp.PageId })
+                .IsUnique();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model Page
+﻿@model PageViewModel
 
 <div class="modal-header">
     <h5 class="modal-title">Editar Página</h5>
@@ -18,6 +18,10 @@
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SelectedUsersIds" class="control-label"></label>
+                <select asp-for="SelectedUsersIds" asp-items="@(new SelectList(Model.Users, "Id", "DisplayUser"))" class="form-select" id="multiple-select-field" multiple></select>
             </div>
             <div class="form-group modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>

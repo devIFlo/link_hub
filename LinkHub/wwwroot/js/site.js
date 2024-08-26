@@ -4,6 +4,15 @@
             url: '/lib/DataTables/pt-BR.json'
         }
     });
+
+    $('#modalPageEdit').on('show.bs.modal', function (event) {
+        $('#multiple-select-field').select2({
+            dropdownParent: $('#modalPageEdit'),
+            theme: "bootstrap-5",
+            width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+            placeholder: $(this).data('placeholder')
+        });
+    });
 });
 
 function previewImage(event) {
@@ -144,4 +153,8 @@ $('.btn-user-settings').click(function () {
             $('#modalUserSettings').modal('show');
         }
     });
+});
+
+$(document).ready(function () {
+    
 });

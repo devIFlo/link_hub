@@ -1,6 +1,8 @@
 ﻿using LinkHub.Models;
 using LinkHub.Repositories;
+using LinkHub.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinkHub.Controllers
@@ -9,10 +11,12 @@ namespace LinkHub.Controllers
     public class PagesController : Controller
     {
         private readonly IPageRepository _pageRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public PagesController(IPageRepository pageRepository)
+        public PagesController(IPageRepository pageRepository, UserManager<ApplicationUser> userManager)
         {
             _pageRepository = pageRepository;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -41,13 +45,22 @@ namespace LinkHub.Controllers
 
         public IActionResult Edit(int id)
         {
-            Page page = _pageRepository.GetPage(id);
+            var page = _pageRepository.GetPage(id);
             if (page == null)
             {
                 return NotFound();
             }
 
-            return PartialView("_Edit", page);
+            var users = _userManager.Users;
+
+            var pageView = new PageViewModel
+            {
+                Name = page.Name,
+                Description = page.Description,
+                Users = users
+            };
+
+            return PartialView("_Edit", pageView);
         }
 
         [HttpPost]
