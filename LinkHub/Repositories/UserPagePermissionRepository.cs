@@ -1,5 +1,6 @@
 ﻿using LinkHub.Data;
 using LinkHub.Models;
+using LinkHub.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace LinkHub.Repositories
@@ -13,30 +14,65 @@ namespace LinkHub.Repositories
             _context = context;
         }
 
-        public async Task<UserPagePermission> Add(UserPagePermission userPagePermission)
+        public async Task<List<UserPagePermission>> GetPermissionPerPageAsync(int pageId)
         {
-            _context.UserPagePermissions.Add(userPagePermission);
-            await _context.SaveChangesAsync();
-
-            return userPagePermission;
+            return await _context.UserPagePermissions
+                .Where(p => p.PageId == pageId)
+                .ToListAsync();
         }
 
-        public async Task<bool> Delete(string userId, int pageId)
+        public async Task<List<string>> GetUsersPerPageAsync(int pageId)
         {
-            var userPagePermission = await GetUserPagePermissionAsync(userId, pageId);
+            return await _context.UserPagePermissions
+                .Where(x => x.PageId == pageId)
+                .Select(x => x.UserId)
+                .ToListAsync();
+        }
 
-            if (userPagePermission == null) throw new Exception("Houve um erro ao remover as permissões!");
+        public async Task<bool> Update(int pageId, List<string> userIds)
+        {
+            var existingPermissions = await GetPermissionPerPageAsync(pageId);
+                        
+            var newPermissions = new List<UserPagePermission>();
 
-            _context.UserPagePermissions.Remove(userPagePermission);
-            _context.SaveChanges();
+            foreach (var userId in userIds)
+            {
+                var existingPermission = existingPermissions
+                    .FirstOrDefault(x => x.UserId == userId);
+
+                if (existingPermission == null)
+                {
+                    newPermissions.Add(new UserPagePermission
+                    {
+                        UserId = userId,
+                        PageId = pageId
+                    });
+                }
+            }                     
+
+            var permissionsToRemove = existingPermissions
+                .Where(x => !userIds.Contains(x.UserId))
+                .ToList();            
+
+            _context.UserPagePermissions.RemoveRange(permissionsToRemove);
+            _context.UserPagePermissions.AddRange(newPermissions);
+
+            await _context.SaveChangesAsync();
 
             return true;
         }
 
-        public async Task<UserPagePermission?> GetUserPagePermissionAsync(string userId, int pageId)
+        public async Task<bool> DeleteAllPagePermissions(int pageId)
         {
-            return await _context.UserPagePermissions
-                .FirstOrDefaultAsync(x => x.UserId == userId && x.PageId == pageId);
+            var existingPermission = _context.UserPagePermissions
+                .Where(p => p.PageId == pageId);
+
+            if (existingPermission == null) throw new Exception("Houve um erro ao remover as permissões!");
+
+            _context.UserPagePermissions.RemoveRange(existingPermission);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

@@ -13,17 +13,17 @@
 </p>
 
 <div class="table-responsive">
-    <table id="data-table" class="table table-striped table-bordered" style="width:100%">
-        <thead>
+    <table id="data-table" class="table table-striped table-bordered table-hover text-center" style="width:100%">
+        <thead class="table-success">
             <tr>
-                <th>
+                <th class="text-center col-6 col-sm-4">
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
-                <th>
+                <th class="text-center d-none d-sm-table-cell col-sm-4">
                     @Html.DisplayNameFor(model => model.Description)
                 </th>
-                <th>
-                    #
+                <th class="text-center col-6 col-sm-4">
+                    Ações
                 </th>
             </tr>
         </thead>
@@ -31,17 +31,25 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>
+                    <td class="col-6 col-sm-4">
                         @Html.DisplayFor(modelItem => item.Name)
                     </td>
-                    <td>
+                    <td class="d-none d-sm-table-cell col-sm-4">
                         @Html.DisplayFor(modelItem => item.Description)
                     </td>
-                    <td class="text-end">
-                        <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                            <a href="javascript:" page-id="@item.Id" class="btn btn-success btn-page-edit">Editar</a>
-                            <a href="javascript:" page-id="@item.Id" class="btn btn-danger btn-page-remove">Remover</a>
-                        </div>
+                    <td class="col-6 col-sm-4">
+                        <a href="javascript:" page-id="@item.Id" class="btn btn-warning btn-page-permission">
+                            <i class="fa-solid fa-user-lock"></i>
+                            <span class="d-none d-sm-inline">Permissões</span>
+                        </a>
+                        <a href="javascript:" page-id="@item.Id" class="btn btn-primary btn-page-edit">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                            <span class="d-none d-sm-inline">Editar</span>
+                        </a>
+                        <a href="javascript:" page-id="@item.Id" class="btn btn btn-danger btn-page-remove">
+                            <i class="fa-regular fa-trash-can"></i>
+                            <span class="d-none d-sm-inline">Remover</span>
+                        </a>
                     </td>
                 </tr>
             }
@@ -54,6 +62,15 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div id="pageCreate"></div>
+        </div>
+    </div>
+</div>
+
+@* Modal Page Permission *@
+<div class="modal fade" id="modalPagePermission" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div id="pagePermission"></div>
         </div>
     </div>
 </div>

@@ -1,4 +1,4 @@
-﻿@model PageViewModel
+﻿@model Page
 
 <div class="modal-header">
     <h5 class="modal-title">Editar Página</h5>
@@ -6,7 +6,7 @@
 </div>
 <div class="modal-body">
     <div class="row">
-        <form enctype="multipart/form-data" asp-action="Edit">
+        <form id="formEdit" enctype="multipart/form-data" asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -19,16 +19,12 @@
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="SelectedUsersIds" class="control-label"></label>
-                <select asp-for="SelectedUsersIds" asp-items="@(new SelectList(Model.Users, "Id", "DisplayUser"))" class="form-select" id="multiple-select-field" multiple></select>
-            </div>
-            <div class="form-group modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                <input type="submit" value="Salvar" class="btn btn-success" />
-            </div>
         </form>
     </div>
+</div>
+<div class="form-group modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+    <input type="submit" form="formEdit" value="Salvar" class="btn btn-success" />
 </div>
 
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>

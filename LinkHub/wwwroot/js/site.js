@@ -5,9 +5,9 @@
         }
     });
 
-    $('#modalPageEdit').on('show.bs.modal', function (event) {
+    $('#modalPagePermission').on('show.bs.modal', function (event) {
         $('#multiple-select-field').select2({
-            dropdownParent: $('#modalPageEdit'),
+            dropdownParent: $('#modalPagePermission'),
             theme: "bootstrap-5",
             width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
             placeholder: $(this).data('placeholder')
@@ -116,6 +116,19 @@ $('.btn-page-add').click(function () {
     });
 });
 
+$('.btn-page-permission').click(function () {
+    var pageId = $(this).attr('page-id');
+
+    $.ajax({
+        type: 'GET',
+        url: '/Pages/Permission/' + pageId,
+        success: function (result) {
+            $("#pagePermission").html(result);
+            $('#modalPagePermission').modal('show');
+        }
+    });
+});
+
 $('.btn-page-edit').click(function () {
     var pageId = $(this).attr('page-id');
 
@@ -153,8 +166,4 @@ $('.btn-user-settings').click(function () {
             $('#modalUserSettings').modal('show');
         }
     });
-});
-
-$(document).ready(function () {
-    
 });

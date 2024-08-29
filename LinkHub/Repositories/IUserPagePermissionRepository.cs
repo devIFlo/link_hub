@@ -4,8 +4,9 @@ namespace LinkHub.Repositories
 {
     public interface IUserPagePermissionRepository
     {
-        Task<UserPagePermission> Add(UserPagePermission userPagePermission);
-        Task<bool> Delete(string userId, int pageId);
-        Task<UserPagePermission?> GetUserPagePermissionAsync(string userId, int pageId);
+        Task<List<UserPagePermission>> GetPermissionPerPageAsync(int pageId);
+        Task<List<string>> GetUsersPerPageAsync(int pageId);
+        Task<bool> Update(int pageId, List<string> userIds);
+        Task<bool> DeleteAllPagePermissions(int pageId);
     }
 }

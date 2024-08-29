@@ -63,6 +63,8 @@ body {
     .navbar-nav .navbar-text {
         display: none !important;
     }
+
+
 }
 
 .btn-user-settings {
@@ -103,15 +105,4 @@ body {
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-}
-
-
-.select2-container .select2-selection--multiple {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-}
-
-.select2-selection__choice {
-    margin-right: 5px;
 }

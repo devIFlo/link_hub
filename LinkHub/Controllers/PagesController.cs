@@ -4,6 +4,7 @@ using LinkHub.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LinkHub.Controllers
 {
@@ -11,12 +12,16 @@ namespace LinkHub.Controllers
     public class PagesController : Controller
     {
         private readonly IPageRepository _pageRepository;
+        private readonly IUserPagePermissionRepository _userPagePermissionRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public PagesController(IPageRepository pageRepository, UserManager<ApplicationUser> userManager)
+        public PagesController(IPageRepository pageRepository,
+            UserManager<ApplicationUser> userManager,
+            IUserPagePermissionRepository userPagePermissionRepository)
         {
             _pageRepository = pageRepository;
             _userManager = userManager;
+            _userPagePermissionRepository = userPagePermissionRepository;
         }
 
         public IActionResult Index()
@@ -43,24 +48,15 @@ namespace LinkHub.Controllers
             return View();
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var page = _pageRepository.GetPage(id);
+            var page = await _pageRepository.GetPageAsync(id);
             if (page == null)
             {
                 return NotFound();
             }
 
-            var users = _userManager.Users;
-
-            var pageView = new PageViewModel
-            {
-                Name = page.Name,
-                Description = page.Description,
-                Users = users
-            };
-
-            return PartialView("_Edit", pageView);
+            return PartialView("_Edit", page);
         }
 
         [HttpPost]
@@ -72,9 +68,51 @@ namespace LinkHub.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Permission(int id)
         {
-            Page page = _pageRepository.GetPage(id);
+            var page = await _pageRepository.GetPageAsync(id);
+            if (page == null)
+            {
+                return NotFound();
+            }
+
+            var selectedUserIds = await _userPagePermissionRepository.GetUsersPerPageAsync(id);
+
+            var users = await _userManager.Users.ToListAsync();
+
+            var permissionView = new PermissionViewModel
+            {
+                PageId = page.Id,
+                PageName = page.Name,
+                Users = users,
+                SelectedUserIds = selectedUserIds
+            };
+
+            return PartialView("_Permission", permissionView);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Permission(PermissionViewModel permission)
+        {
+            var pageId = permission.PageId;
+            var userIds = permission.SelectedUserIds;
+
+            if (userIds != null)
+            {
+                await _userPagePermissionRepository.Update(pageId, userIds);
+            } 
+            else
+            {
+                await _userPagePermissionRepository.DeleteAllPagePermissions(pageId);
+            }                       
+
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            Page page = await _pageRepository.GetPageAsync(id);
             if(page == null)
             {
                 return NotFound();

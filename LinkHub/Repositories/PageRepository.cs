@@ -1,5 +1,6 @@
 ﻿using LinkHub.Data;
 using LinkHub.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace LinkHub.Repositories
 {
@@ -12,9 +13,9 @@ namespace LinkHub.Repositories
             _context = context;
         }
 
-        public Page GetPage(int id)
+        public async Task<Page> GetPageAsync(int id)
         {
-            return _context.Pages.FirstOrDefault(p => p.Id == id);
+            return await _context.Pages.FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public List<Page> GetPages()
@@ -32,7 +33,7 @@ namespace LinkHub.Repositories
 
         public async Task<Page> Update(Page page)
         {
-            Page pageDB =  GetPage(page.Id);
+            Page pageDB = await GetPageAsync(page.Id);
 
             pageDB.Name = page.Name;
             pageDB.Description = page.Description;
@@ -43,9 +44,9 @@ namespace LinkHub.Repositories
             return pageDB;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            Page pageDB = GetPage(id);
+            Page pageDB = await GetPageAsync(id);
 
             if (pageDB == null) throw new Exception("Houve um erro na deleção da Página!");
 

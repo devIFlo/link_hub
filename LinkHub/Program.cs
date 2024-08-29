@@ -24,6 +24,7 @@ builder.Services.AddScoped<ILinkRepository, LinkRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IPageRepository, PageRepository>();
 builder.Services.AddScoped<ILdapSettingsRepository, LdapSettingsRepository>();
+builder.Services.AddScoped<IUserPagePermissionRepository, UserPagePermissionRepository>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 	.AddCookie(options =>
