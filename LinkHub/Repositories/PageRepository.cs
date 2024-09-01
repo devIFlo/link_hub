@@ -23,6 +23,14 @@ namespace LinkHub.Repositories
             return _context.Pages.ToList();
         }
 
+        public async Task<List<Page>> GetPagePerUserAsync(string userId)
+        {
+            return await _context.Pages
+                .Where(p => _context.UserPagePermissions
+                    .Any(upp => upp.PageId == p.Id && upp.UserId == userId))
+                .ToListAsync();
+        }
+
         public async Task<Page> Add(Page page)
         {
             _context.Pages.Add(page);

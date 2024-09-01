@@ -13,9 +13,9 @@ namespace LinkHub.Repositories
             _context = context;
         }
 
-        public Category GetCategory(int id)
+        public async Task<Category> GetCategoryAsync(int id)
         {
-            return _context.Categories.FirstOrDefault(x => x.Id == id);
+            return await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public List<Category> GetCategories()
@@ -23,7 +23,16 @@ namespace LinkHub.Repositories
             return _context.Categories.Include(c => c.Page).ToList();
         }
 
-        public async Task<Category> Add(Category category)
+        public async Task<List<Category>> GetCategoriesPerUserAsync(string userId)
+        {
+            return await _context.Categories
+                .Include(c => c.Page)
+                .Where(c => _context.UserPagePermissions
+                    .Any(upp => upp.PageId == c.PageId && upp.UserId == userId))
+                .ToListAsync();
+        }
+
+        public async Task<Category> AddAsync(Category category)
         {
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
@@ -31,9 +40,9 @@ namespace LinkHub.Repositories
             return category;
         }
 
-        public async Task<Category> Update(Category category)
+        public async Task<Category> UpdateAsync(Category category)
         {
-            Category categoryDB = GetCategory(category.Id);
+            var categoryDB = await GetCategoryAsync(category.Id);
 
             categoryDB.Name = category.Name;
 
@@ -43,14 +52,15 @@ namespace LinkHub.Repositories
             return categoryDB;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            Category category = GetCategory(id);
+            var category = await GetCategoryAsync(id);
 
-            if (category == null) throw new Exception("Houve um erro na deleção da Categoria!");
+            if (category == null) 
+                throw new InvalidOperationException("A categoria não foi encontrada.");
 
             _context.Categories.Remove(category);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
         }

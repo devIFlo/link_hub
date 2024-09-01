@@ -2,6 +2,7 @@
 using LinkHub.Repositories;
 using LinkHub.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinkHub.Controllers
@@ -11,22 +12,32 @@ namespace LinkHub.Controllers
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IPageRepository _pageRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CategoriesController(ICategoryRepository categoryRepository, IPageRepository pageRepository)
+        public CategoriesController(ICategoryRepository categoryRepository,
+            IPageRepository pageRepository,
+            UserManager<ApplicationUser> userManager)
         {
             _categoryRepository = categoryRepository;
             _pageRepository = pageRepository;
+            _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var categories = _categoryRepository.GetCategories();
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user?.Id;
+
+            var categories = await _categoryRepository.GetCategoriesPerUserAsync(userId);
             return View(categories);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var pages = _pageRepository.GetPages();
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user?.Id;
+
+            var pages = await _pageRepository.GetPagePerUserAsync(userId);
             var categoryView = new CategoryViewModel
             {
                 Pages = pages
@@ -47,7 +58,7 @@ namespace LinkHub.Controllers
                     PageId = categoryView.SelectedPageId
                 };
 
-                await _categoryRepository.Add(category);
+                await _categoryRepository.AddAsync(category);
                 return RedirectToAction("Index");
             }
 
@@ -55,15 +66,18 @@ namespace LinkHub.Controllers
             return View(categoryView);
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var category = _categoryRepository.GetCategory(id);
+            var category = await _categoryRepository.GetCategoryAsync(id);
             if (category == null)
             {
                 return NotFound();
             }
 
-            var pages = _pageRepository.GetPages();
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user?.Id;
+
+            var pages = await _pageRepository.GetPagePerUserAsync(userId);
             var categoryView = new CategoryViewModel
             {
                 Name = category.Name,
@@ -78,14 +92,14 @@ namespace LinkHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Category category)
         {
-            await _categoryRepository.Update(category);
+            await _categoryRepository.UpdateAsync(category);
 
             return RedirectToAction("Index");
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            Category category = _categoryRepository.GetCategory(id);
+            Category category = await _categoryRepository.GetCategoryAsync(id);
             if (category == null)
             {
                 return NotFound();
@@ -96,9 +110,9 @@ namespace LinkHub.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            _categoryRepository.Delete(id);
+            await _categoryRepository.DeleteAsync(id);
             return RedirectToAction("Index");
         }
     }

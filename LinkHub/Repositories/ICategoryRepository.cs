@@ -5,9 +5,10 @@ namespace LinkHub.Repositories
     public interface ICategoryRepository
     {
         List<Category> GetCategories();
-        Category GetCategory(int id);
-        Task<Category> Add(Category category);
-        Task<Category> Update(Category category);
-        bool Delete(int id);
+        Task<Category> GetCategoryAsync(int id);
+        Task<List<Category>> GetCategoriesPerUserAsync(string userId);
+        Task<Category> AddAsync(Category category);
+        Task<Category> UpdateAsync(Category category);
+        Task<bool> DeleteAsync(int id);
     }
 }
