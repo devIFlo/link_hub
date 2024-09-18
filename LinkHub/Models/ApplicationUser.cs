@@ -15,6 +15,6 @@ namespace LinkHub.Models
         public string? LastName { get; set; }
 
         [NotMapped]
-        public string? DisplayUser => $"{UserName} ({FirstName})";
+        public string? DisplayUser => $"{UserName} ({FirstName} {LastName})";
     }
 }

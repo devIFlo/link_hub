@@ -1,9 +1,12 @@
 ﻿using LinkHub.Models;
+using LinkHub.ViewModels;
 using LinkHub.Repositories;
 using LinkHub.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace LinkHub.Controllers
@@ -12,15 +15,19 @@ namespace LinkHub.Controllers
     public class UsersController : Controller
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly RoleManager<IdentityRole> _roleManager;
 		private readonly LdapSyncService _ldapSyncService;
 		private readonly ILdapSettingsRepository _ldapSettingsRepository;
 
 		public UsersController(UserManager<ApplicationUser> userManager,
-			LdapSyncService ldapSyncService, ILdapSettingsRepository ldapSettingsRepository)
+			RoleManager<IdentityRole> roleManager,
+			LdapSyncService ldapSyncService, 
+			ILdapSettingsRepository ldapSettingsRepository)
 		{
 			_userManager = userManager;
 			_ldapSyncService = ldapSyncService;
 			_ldapSettingsRepository = ldapSettingsRepository;
+			_roleManager = roleManager;
 		}
 
 		public IActionResult Index()
@@ -66,8 +73,81 @@ namespace LinkHub.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
-		public async Task<IActionResult> DeleteUser(string id)
+		public async Task<IActionResult> Group(string id)
+		{
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+			{
+				return NotFound();
+            }
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var roles = await _roleManager.Roles.ToListAsync();
+
+            var selectedRole = roles.FirstOrDefault(r => userRoles.Contains(r.Name))?.Name;
+
+			var rolesView = new RoleViewModel
+			{
+				UserId = id,
+				UserName = user.UserName,
+				Roles = roles,
+				SelectedRole = selectedRole
+            };
+
+            return PartialView("_Group", rolesView);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Group(RoleViewModel model)
+		{
+            var user = await _userManager.FindByIdAsync(model.UserId);          
+            
+			if (user != null)
+			{
+                var userRoles = await _userManager.GetRolesAsync(user);
+
+                if (userRoles.Any())
+                {
+                    var remevoRoleResult = await _userManager.RemoveFromRolesAsync(user, userRoles);
+                    if (!remevoRoleResult.Succeeded)
+                    {
+                        ModelState.AddModelError("", "Erro ao remover os grupos existentes.");
+                        return View(model);
+                    }
+                }
+
+                var addRoleResult = await _userManager.AddToRoleAsync(user, model.SelectedRole);
+                if (!addRoleResult.Succeeded)
+                {
+                    ModelState.AddModelError("", "Erro ao adicionar o novo grupo.");
+                    return View(model);
+                }
+
+                return RedirectToAction("Index");
+            }
+
+            ModelState.AddModelError("", "Usuário não encontrado.");
+
+            return RedirectToAction("Index");
+        }
+
+		public async Task<IActionResult> Delete(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return PartialView("_Delete", user);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id)
 		{
 			var user = await _userManager.FindByIdAsync(id);
 

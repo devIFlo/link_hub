@@ -167,3 +167,29 @@ $('.btn-user-settings').click(function () {
         }
     });
 });
+
+$('.btn-user-group').click(function () {
+    var userId = $(this).attr('user-id');
+
+    $.ajax({
+        type: 'GET',
+        url: '/Users/Group/' + userId,
+        success: function (result) {
+            $("#userGroup").html(result);
+            $('#modalUserGroup').modal('show');
+        }
+    });
+});
+
+$('.btn-user-delete').click(function () {
+    var userId = $(this).attr('user-id');
+
+    $.ajax({
+        type: 'GET',
+        url: '/Users/Delete/' + userId,
+        success: function (result) {
+            $("#userDelete").html(result);
+            $('#modalUserDelete').modal('show');
+        }
+    });
+});
