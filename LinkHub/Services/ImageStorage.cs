@@ -23,7 +23,9 @@ namespace LinkHub.Services
                     }));
 
                     var outputPath = Path.Combine("wwwroot/images", fileName);
-                    await image.SaveAsync(outputPath);
+                    var fullPath = Path.GetFullPath(outputPath);
+
+                    await image.SaveAsync(fullPath);
                 }
             }
 
