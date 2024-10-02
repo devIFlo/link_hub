@@ -3,8 +3,10 @@ using LinkHub.Models;
 using LinkHub.Repositories;
 using LinkHub.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.InteropServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
+
+var keyPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @"C:\keys" : "/var/keys";
+if (!Directory.Exists(keyPath))
+{
+	Directory.CreateDirectory(keyPath);
+}
+builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(keyPath));
 
 builder.Services.AddScoped<LdapAuthentication>();
 builder.Services.AddScoped<LdapSyncService>();

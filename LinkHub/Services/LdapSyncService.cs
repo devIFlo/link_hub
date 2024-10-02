@@ -25,7 +25,7 @@ namespace LinkHub.Services
 			_ldapSettingsRepository = ldapSettingsRepository;
             _protector = dataProtectionProvider.CreateProtector("LdapSettingsPasswordProtector");
         }
-
+			
         public async Task SyncUsersAsync()
 		{
 			var ldapUsers = GetLdapUsers();
@@ -38,20 +38,22 @@ namespace LinkHub.Services
 				if (identityUser == null)
 				{
 					var newUser = new ApplicationUser
-                    {
+					{
 						UserName = ldapUser.UserName,
 						Email = ldapUser.Email,
 						FirstName = ldapUser.FirstName,
 						LastName = ldapUser.LastName
 					};
 
-                    var result = await _userManager.CreateAsync(newUser);
-                    if (result.Succeeded)
-                    {
-                        await _userManager.AddToRoleAsync(newUser, "VIEWER");
-                    }
-    
-					_logger.LogError("Failed to create new user {UserName}: {Errors}", ldapUser.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
+					var result = await _userManager.CreateAsync(newUser);
+					if (result.Succeeded)
+					{
+						await _userManager.AddToRoleAsync(newUser, "VIEWER");
+					}
+					else
+					{
+						_logger.LogError("Failed to create new user {UserName}: {Errors}", ldapUser.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
+					}   					
 				}
 				else
 				{
@@ -98,6 +100,9 @@ namespace LinkHub.Services
             var ldapConnection = new LdapConnection(new LdapDirectoryIdentifier(host, port));
 			var networkCredential = new NetworkCredential(userDn, password);
 			ldapConnection.Credential = networkCredential;
+			ldapConnection.SessionOptions.ProtocolVersion = 3;
+			ldapConnection.SessionOptions.ReferralChasing = ReferralChasingOptions.None;
+			ldapConnection.Timeout = TimeSpan.FromMinutes(1);
 			ldapConnection.Bind();
 
 			var filter = "(objectClass=person)";

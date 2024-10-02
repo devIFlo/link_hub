@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore;
 namespace LinkHub.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
-    {
+	{
         public DbSet<Link> Links { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Page> Pages { get; set; }
         public DbSet<LdapSettings> LdapSettings { get; set; }
         public DbSet<UserPagePermission> UserPagePermissions { get; set; }
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
 
