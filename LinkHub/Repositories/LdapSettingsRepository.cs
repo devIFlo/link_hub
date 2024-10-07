@@ -36,10 +36,10 @@ namespace LinkHub.Repositories
         {
             LdapSettings ldapSettingsDB = GetLdapSettings();
 
-            ldapSettingsDB.Host = ldapSettings.Host;
+            ldapSettingsDB.FqdnDomain = ldapSettings.FqdnDomain;
             ldapSettingsDB.Port = ldapSettings.Port;
             ldapSettingsDB.BaseDn = ldapSettings.BaseDn;
-            ldapSettingsDB.Domain = ldapSettings.Domain;
+            ldapSettingsDB.NetBiosDomain = ldapSettings.NetBiosDomain;
             ldapSettingsDB.UserDn = ldapSettings.UserDn;
             ldapSettingsDB.Password = ldapSettings.Password;
 

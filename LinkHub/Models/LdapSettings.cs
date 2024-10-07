@@ -6,14 +6,17 @@ namespace LinkHub.Models
     public class LdapSettings
     {
         public int Id { get; set; }
-        public string Host { get; set; }
+
+		[Display(Name = "Dominio FQDN")]
+		public string FqdnDomain { get; set; }
 
         [Display(Name = "Porta")]
         public int Port { get; set; }
 
-        [Display(Name = "Dominio")]
-        public string Domain { get; set; }
-        public string BaseDn { get; set; }
+        [Display(Name = "Dominio NetBios")]
+        public string NetBiosDomain { get; set; }
+
+		public string BaseDn { get; set; }
 
         [Display(Name = "Usuário")]
         public string UserDn { get; set; }

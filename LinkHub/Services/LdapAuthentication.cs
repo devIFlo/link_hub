@@ -19,9 +19,15 @@ namespace LinkHub.Services
 
             try
             {
-                using (LdapConnection ldapConnection = new LdapConnection(new LdapDirectoryIdentifier(ldapSettings.Host, ldapSettings.Port)))
+                using (LdapConnection ldapConnection = new LdapConnection(new LdapDirectoryIdentifier(ldapSettings.FqdnDomain, ldapSettings.Port)))
                 {
-                    ldapConnection.Bind(new NetworkCredential(username, password, ldapSettings.Domain));
+					ldapConnection.AuthType = AuthType.Basic;
+					ldapConnection.SessionOptions.ProtocolVersion = 3;
+					ldapConnection.SessionOptions.ReferralChasing = ReferralChasingOptions.None;
+					ldapConnection.Timeout = TimeSpan.FromMinutes(1);
+
+					ldapConnection.Bind(new NetworkCredential(username, password, ldapSettings.NetBiosDomain));
+
                     return true;
                 }
             }

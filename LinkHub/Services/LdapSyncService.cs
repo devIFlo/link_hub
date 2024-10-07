@@ -91,16 +91,17 @@ namespace LinkHub.Services
 			var ldapUsers = new List<LdapUser>();
 			var ldapSettings = _ldapSettingsRepository.GetLdapSettings();
 
-            var host = ldapSettings.Host;
+            var fqdnDomain = ldapSettings.FqdnDomain;
 			var port = ldapSettings.Port;
-			var domain = ldapSettings.Domain;
+			var netBiosDomain = ldapSettings.NetBiosDomain;
 			var baseDn = ldapSettings.BaseDn;
             var userDn = ldapSettings.UserDn;
 			var password = ldapSettings.DecryptPassword(_protector);
 
 			var ldapConnection = new LdapConnection(
-				   new LdapDirectoryIdentifier(domain),
-				   new NetworkCredential(userDn, password), AuthType.Basic);
+				   new LdapDirectoryIdentifier(fqdnDomain, port),
+				   new NetworkCredential(userDn, password, netBiosDomain), 
+				   AuthType.Basic);
 
 			ldapConnection.SessionOptions.ProtocolVersion = 3;
 			ldapConnection.SessionOptions.ReferralChasing = ReferralChasingOptions.None;
