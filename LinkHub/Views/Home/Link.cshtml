@@ -29,19 +29,21 @@
             string active = contTabContent == 0 ? "show active" : "";
 
             <div class="tab-pane fade @active" id="nav-@tab.Name" role="tabpanel" aria-labelledby="nav-@tab.Name-tab">
-                <div class="row row-cols-1 row-cols-md-5 g-4">
+                <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4">
                     @foreach (var tabContent in Model)
                     {
                         if (tab.Name == tabContent.Category.Name)
                         {
                             <div class="col">
-                                <div class="card h-100 border-success text-success">
-                                    <a href="@tabContent.Url" target="_blank"><img src="/images/@tabContent.FileName" class="card-img-top border-bottom" alt="..."></a>
-                                    <div class="card-body">
-                                        <h5 class="card-title">@tabContent.Name</h5>
-                                        <p class="card-text">@tabContent.Description</p>
+                                <a href="@tabContent.Url" target="_blank">
+                                    <div class="card-link h-100">
+                                        <img src="/images/@tabContent.FileName" class="card-img-top" alt="...">
+                                        <div class="card-link-body">
+                                            <h5 class="card-title">@tabContent.Name</h5>
+                                            <p class="card-text">@tabContent.Description</p>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         }
                     }
