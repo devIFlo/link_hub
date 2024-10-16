@@ -10,7 +10,7 @@ namespace LinkHub.ViewModels
 
         [Required(ErrorMessage = "O nome é obrigatório.")]
         [Display(Name = "Nome")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [Required(ErrorMessage = "Selecione um página.")]
         [Display(Name = "Página")]

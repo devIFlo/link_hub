@@ -30,7 +30,7 @@ namespace LinkHub.Services
 		{
 			var ldapUsers = GetLdapUsers();
 			var identityUsers = _userManager.Users.ToList();
-
+				
 			foreach (var ldapUser in ldapUsers)
 			{
 				var identityUser = identityUsers.FirstOrDefault(u => u.UserName == ldapUser.UserName);
@@ -71,7 +71,7 @@ namespace LinkHub.Services
 					if (identityUser.LastName != ldapUser.LastName)
 					{
 						identityUser.LastName = ldapUser.LastName;
-					    isUpdated = true;
+						isUpdated = true;
 					}
 
 					if (isUpdated)

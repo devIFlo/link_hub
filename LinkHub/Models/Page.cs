@@ -8,9 +8,9 @@ namespace LinkHub.Models
 
         [Required(ErrorMessage = "O nome é obrigatório.")]
         [Display(Name = "Nome")]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [Display(Name = "Descrição")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 }

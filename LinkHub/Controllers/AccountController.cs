@@ -24,7 +24,7 @@ namespace LinkHub.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity != null && User.Identity.IsAuthenticated)
             {
 				return RedirectToAction("Index", "Home");
 			}

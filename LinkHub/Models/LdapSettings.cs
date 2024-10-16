@@ -8,22 +8,27 @@ namespace LinkHub.Models
         public int Id { get; set; }
 
 		[Display(Name = "Dominio FQDN")]
-		public string FqdnDomain { get; set; }
+        [Required]
+		public required string FqdnDomain { get; set; }
 
         [Display(Name = "Porta")]
-        public int Port { get; set; }
+        [Required]
+        public required int Port { get; set; }
 
         [Display(Name = "Dominio NetBios")]
-        public string NetBiosDomain { get; set; }
+        [Required]
+        public required string NetBiosDomain { get; set; }
 
-		public string BaseDn { get; set; }
+		public required string BaseDn { get; set; }
 
         [Display(Name = "Usuário")]
-        public string UserDn { get; set; }
+        [Required]
+        public required string UserDn { get; set; }
 
         [DataType(DataType.Password)]
         [Display(Name = "Senha")]
-        public string Password { get; set; }
+        [Required]
+        public required string Password { get; set; }
 
         public void EncryptPassword(IDataProtector protector)
         {

@@ -8,7 +8,7 @@ namespace LinkHub.ViewModels
         public int PageId { get; set; }
 
         [Display(Name = "Página")]
-        public string PageName { get; set; }
+        public string? PageName { get; set; }
 
         [Display(Name = "Usuários")]
         public List<string>? SelectedUserIds { get; set; }

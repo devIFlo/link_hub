@@ -28,6 +28,11 @@ namespace LinkHub.Controllers
             var user = await _userManager.GetUserAsync(User);
             var userId = user?.Id;
 
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             var categories = await _categoryRepository.GetCategoriesPerUserAsync(userId);
             return View(categories);
         }
@@ -36,6 +41,11 @@ namespace LinkHub.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             var userId = user?.Id;
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
             var pages = await _pageRepository.GetPagePerUserAsync(userId);
             var categoryView = new CategoryViewModel

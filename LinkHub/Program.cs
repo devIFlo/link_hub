@@ -77,10 +77,17 @@ async Task CreateUserProfilesAsync(WebApplication app)
 {
     var scopedFactory = app.Services.GetService<IServiceScopeFactory>();
 
-    using (var scope = scopedFactory.CreateScope())
+    if (scopedFactory != null)
     {
-        var service = scope.ServiceProvider.GetService<ISeedUserRoleInitial>();
-        await service.SeedRolesAsync();
-        await service.SeedUsersAsync();
+        using (var scope = scopedFactory.CreateScope())
+        {
+            var userRoleInitial = scope.ServiceProvider.GetService<ISeedUserRoleInitial>();
+
+            if (userRoleInitial != null)
+            {
+                await userRoleInitial.SeedRolesAsync();
+                await userRoleInitial.SeedUsersAsync();
+            }            
+        }
     }
 }

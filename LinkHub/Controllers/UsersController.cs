@@ -86,7 +86,7 @@ namespace LinkHub.Controllers
 
             var roles = await _roleManager.Roles.ToListAsync();
 
-            var selectedRole = roles.FirstOrDefault(r => userRoles.Contains(r.Name))?.Name;
+            var selectedRole = roles.FirstOrDefault(r => r.Name != null && userRoles.Contains(r.Name))?.Name;
 
 			var rolesView = new RoleViewModel
 			{
@@ -103,31 +103,34 @@ namespace LinkHub.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Group(RoleViewModel model)
 		{
-            var user = await _userManager.FindByIdAsync(model.UserId);          
-            
-			if (user != null)
+			if (!ModelState.IsValid)
 			{
-                var userRoles = await _userManager.GetRolesAsync(user);
+				var user = await _userManager.FindByIdAsync(model.UserId);
 
-                if (userRoles.Any())
-                {
-                    var remevoRoleResult = await _userManager.RemoveFromRolesAsync(user, userRoles);
-                    if (!remevoRoleResult.Succeeded)
-                    {
-                        ModelState.AddModelError("", "Erro ao remover os grupos existentes.");
-                        return View(model);
-                    }
-                }
+				if (user != null)
+				{
+					var userRoles = await _userManager.GetRolesAsync(user);
 
-                var addRoleResult = await _userManager.AddToRoleAsync(user, model.SelectedRole);
-                if (!addRoleResult.Succeeded)
-                {
-                    ModelState.AddModelError("", "Erro ao adicionar o novo grupo.");
-                    return View(model);
-                }
+					if (userRoles.Any())
+					{
+						var remevoRoleResult = await _userManager.RemoveFromRolesAsync(user, userRoles);
+						if (!remevoRoleResult.Succeeded)
+						{
+							ModelState.AddModelError("", "Erro ao remover os grupos existentes.");
+							return View(model);
+						}
+					}
 
-                return RedirectToAction("Index");
-            }
+					var addRoleResult = await _userManager.AddToRoleAsync(user, model.SelectedRole);
+					if (!addRoleResult.Succeeded)
+					{
+						ModelState.AddModelError("", "Erro ao adicionar o novo grupo.");
+						return View(model);
+					}
+
+					return RedirectToAction("Index");
+				}
+			}
 
             ModelState.AddModelError("", "Usuário não encontrado.");
 
