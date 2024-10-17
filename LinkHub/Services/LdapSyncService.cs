@@ -91,41 +91,46 @@ namespace LinkHub.Services
 			var ldapUsers = new List<LdapUser>();
 			var ldapSettings = _ldapSettingsRepository.GetLdapSettings();
 
+            if (ldapSettings == null)
+            {
+                throw new InvalidOperationException("Configurações LDAP não encontradas.");
+            }
+
             var fqdnDomain = ldapSettings.FqdnDomain;
-			var port = ldapSettings.Port;
-			var netBiosDomain = ldapSettings.NetBiosDomain;
-			var baseDn = ldapSettings.BaseDn;
+            var port = ldapSettings.Port;
+            var netBiosDomain = ldapSettings.NetBiosDomain;
+            var baseDn = ldapSettings.BaseDn;
             var userDn = ldapSettings.UserDn;
-			var password = ldapSettings.DecryptPassword(_protector);
+            var password = ldapSettings.DecryptPassword(_protector);
 
-			var ldapConnection = new LdapConnection(
-				   new LdapDirectoryIdentifier(fqdnDomain, port),
-				   new NetworkCredential(userDn, password, netBiosDomain), 
-				   AuthType.Basic);
+            var ldapConnection = new LdapConnection(
+                    new LdapDirectoryIdentifier(fqdnDomain, port),
+                    new NetworkCredential(userDn, password, netBiosDomain),
+                    AuthType.Basic);
 
-			ldapConnection.SessionOptions.ProtocolVersion = 3;
-			ldapConnection.SessionOptions.ReferralChasing = ReferralChasingOptions.None;
-			ldapConnection.Timeout = TimeSpan.FromMinutes(1);
-			ldapConnection.Bind();
+            ldapConnection.SessionOptions.ProtocolVersion = 3;
+            ldapConnection.SessionOptions.ReferralChasing = ReferralChasingOptions.None;
+            ldapConnection.Timeout = TimeSpan.FromMinutes(1);
+            ldapConnection.Bind();
 
-			var filter = "(objectClass=person)";
-			var searchRequest = new SearchRequest(baseDn, filter, SearchScope.Subtree, null);
-			var response = (SearchResponse)ldapConnection.SendRequest(searchRequest);
+            var filter = "(objectClass=person)";
+            var searchRequest = new SearchRequest(baseDn, filter, SearchScope.Subtree, null);
+            var response = (SearchResponse)ldapConnection.SendRequest(searchRequest);
 
-			foreach (SearchResultEntry entry in response.Entries)
-			{
-				var ldapUser = new LdapUser
-				{
-					UserName = entry.Attributes["sAMAccountName"]?[0]?.ToString(),
-					Email = entry.Attributes["mail"]?[0]?.ToString(),
-					FirstName = entry.Attributes["givenName"]?[0]?.ToString(),
-					LastName = entry.Attributes["sn"]?[0]?.ToString()
-				};
+            foreach (SearchResultEntry entry in response.Entries)
+            {
+                var ldapUser = new LdapUser
+                {
+                    UserName = entry.Attributes["sAMAccountName"]?[0]?.ToString(),
+                    Email = entry.Attributes["mail"]?[0]?.ToString(),
+                    FirstName = entry.Attributes["givenName"]?[0]?.ToString(),
+                    LastName = entry.Attributes["sn"]?[0]?.ToString()
+                };
 
-				ldapUsers.Add(ldapUser);
-			}
+                ldapUsers.Add(ldapUser);
+            }
 
-			return ldapUsers;
+            return ldapUsers;         
 		}
 	}
 }

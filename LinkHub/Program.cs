@@ -1,3 +1,4 @@
+using AspNetCoreHero.ToastNotification;
 using LinkHub.Data;
 using LinkHub.Models;
 using LinkHub.Repositories;
@@ -27,6 +28,14 @@ if (!Directory.Exists(keyPath))
 	Directory.CreateDirectory(keyPath);
 }
 builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(keyPath));
+
+//Adiciona a dependência do Toastify
+builder.Services.AddNotyf(config =>
+{
+    config.DurationInSeconds = 10;
+    config.IsDismissable = true;
+    config.Position = NotyfPosition.TopRight;
+});
 
 builder.Services.AddScoped<LdapAuthentication>();
 builder.Services.AddScoped<LdapSyncService>();

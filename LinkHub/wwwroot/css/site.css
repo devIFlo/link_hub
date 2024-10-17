@@ -76,6 +76,12 @@ a {
     color: #06742b;
 }
 
+/* Configurações de exibição do Toastify */
+.notyf__toast {
+    margin-top: 50px !important;
+    margin-right: 5px !important;
+}
+
 /* Cards da Página Home */
 .card-home {
     background-color: #28a745;

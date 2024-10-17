@@ -5,8 +5,8 @@ using LinkHub.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using AspNetCoreHero.ToastNotification.Abstractions;
 
 
 namespace LinkHub.Controllers
@@ -18,30 +18,49 @@ namespace LinkHub.Controllers
 		private readonly RoleManager<IdentityRole> _roleManager;
 		private readonly LdapSyncService _ldapSyncService;
 		private readonly ILdapSettingsRepository _ldapSettingsRepository;
+        private readonly INotyfService _notifyService;
 
-		public UsersController(UserManager<ApplicationUser> userManager,
+
+        public UsersController(UserManager<ApplicationUser> userManager,
 			RoleManager<IdentityRole> roleManager,
 			LdapSyncService ldapSyncService, 
-			ILdapSettingsRepository ldapSettingsRepository)
+			ILdapSettingsRepository ldapSettingsRepository,
+            INotyfService notifyService)
 		{
 			_userManager = userManager;
 			_ldapSyncService = ldapSyncService;
 			_ldapSettingsRepository = ldapSettingsRepository;
 			_roleManager = roleManager;
-		}
+            _notifyService = notifyService;
+        }
 
 		public IActionResult Index()
 		{
-			var users = _userManager.Users;
+            var users = _userManager.Users;
 			return View(users);
 		}
 
 		[HttpPost]
 		public async Task<IActionResult> SyncLdapUsers()
 		{
-			await _ldapSyncService.SyncUsersAsync();
-			return RedirectToAction("Index", "Users");
-		}
+            var users = _userManager.Users;
+
+            try
+			{
+				await _ldapSyncService.SyncUsersAsync();
+				return RedirectToAction("Index", "Users");
+			}
+            catch (InvalidOperationException ex)
+			{
+                _notifyService.Error(ex.Message);
+                return View("Index", users);
+			}
+			catch (Exception)
+            {
+                _notifyService.Error("Ocorreu um erro inesperado. Procure o administrador do sistema.");
+                return View("Index", users);
+            }
+        }
 
 		public IActionResult Settings()
 		{
