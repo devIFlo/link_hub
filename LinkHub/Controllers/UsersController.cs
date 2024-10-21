@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AspNetCoreHero.ToastNotification.Abstractions;
+using System.DirectoryServices.Protocols;
 
 
 namespace LinkHub.Controllers
@@ -43,34 +44,37 @@ namespace LinkHub.Controllers
 		[HttpPost]
 		public async Task<IActionResult> SyncLdapUsers()
 		{
-            var users = _userManager.Users;
-
-            try
+			try
 			{
 				await _ldapSyncService.SyncUsersAsync();
-				return RedirectToAction("Index", "Users");
+				_notifyService.Success("Usuários sincronizados com sucesso!");
 			}
-            catch (InvalidOperationException ex)
+			catch (InvalidOperationException ex)
 			{
-                _notifyService.Error(ex.Message);
-                return View("Index", users);
+				_notifyService.Warning(ex.Message);
+			}
+			catch (LdapException ex)
+			{
+				_notifyService.Error(ex.Message);
 			}
 			catch (Exception)
-            {
-                _notifyService.Error("Ocorreu um erro inesperado. Procure o administrador do sistema.");
-                return View("Index", users);
-            }
+			{
+				_notifyService.Error("Ocorreu um erro inesperado. Procure o administrador do sistema.");
+			}
+
+            return RedirectToAction("Index");
         }
 
 		public IActionResult Settings()
 		{
 			LdapSettings ldapSettings = _ldapSettingsRepository.GetLdapSettings();
+
 			if (ldapSettings == null)
 			{
                 return PartialView("_Settings");
             }
 
-			return PartialView("_Settings", ldapSettings);			
+			return PartialView("_Settings", ldapSettings);
 		}
 
 		[HttpPost]
@@ -79,16 +83,22 @@ namespace LinkHub.Controllers
 			if (ModelState.IsValid)
 			{
                 LdapSettings ldapSettingsDB = _ldapSettingsRepository.GetLdapSettings();
+
 				if (ldapSettingsDB == null)
 				{
                     await _ldapSettingsRepository.Add(ldapSettings);
-                    return RedirectToAction("Index");
+					_notifyService.Success("Configurações LDAP salvas com sucesso.");
+                } 
+				else
+				{
+					await _ldapSettingsRepository.Update(ldapSettings);
+                    _notifyService.Success("Configurações LDAP atualizadas com sucesso.");
                 }
 
-				await _ldapSettingsRepository.Update(ldapSettings);
                 return RedirectToAction("Index");
             }
 
+			_notifyService.Warning("Preencha todos os campos obrigatórios.");
             return RedirectToAction("Index");
         }
 
@@ -122,7 +132,7 @@ namespace LinkHub.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Group(RoleViewModel model)
 		{
-			if (!ModelState.IsValid)
+			if (ModelState.IsValid)
 			{
 				var user = await _userManager.FindByIdAsync(model.UserId);
 
@@ -135,7 +145,7 @@ namespace LinkHub.Controllers
 						var remevoRoleResult = await _userManager.RemoveFromRolesAsync(user, userRoles);
 						if (!remevoRoleResult.Succeeded)
 						{
-							ModelState.AddModelError("", "Erro ao remover os grupos existentes.");
+							_notifyService.Error("Erro ao remover os grupos existentes.");
 							return View(model);
 						}
 					}
@@ -143,15 +153,17 @@ namespace LinkHub.Controllers
 					var addRoleResult = await _userManager.AddToRoleAsync(user, model.SelectedRole);
 					if (!addRoleResult.Succeeded)
 					{
-						ModelState.AddModelError("", "Erro ao adicionar o novo grupo.");
+                        _notifyService.Error("Erro ao adicionar o novo grupo.");
 						return View(model);
 					}
+
+					_notifyService.Success("Grupo alterado com sucesso!");
 
 					return RedirectToAction("Index");
 				}
 			}
 
-            ModelState.AddModelError("", "Usuário não encontrado.");
+            _notifyService.Error("Usuário não encontrado.");
 
             return RedirectToAction("Index");
         }
@@ -175,25 +187,25 @@ namespace LinkHub.Controllers
 
 			if (user == null)
 			{
-				ViewBag.ErrorMessage = $"Usuário com Id = {id} não foi encontrado";
-				return View("NotFound");
-			}
+                _notifyService.Error($"Usuário com Id = {id} não foi encontrado");
+            }
 			else
 			{
 				var result = await _userManager.DeleteAsync(user);
 
 				if (result.Succeeded)
 				{
-					return RedirectToAction("Index");
+					_notifyService.Success($"Usuário {user.UserName} excluído com sucesso.");
+					
 				}
 
 				foreach (var error in result.Errors)
 				{
-					ModelState.AddModelError("", error.Description);
+					_notifyService.Error(error.Description);
 				}
-
-				return View("Index");
 			}
-		}
+
+            return RedirectToAction("Index");
+        }
 	}
 }

@@ -8,8 +8,7 @@ namespace LinkHub.ViewModels
         [Required]
         public required string UserId { get; set; }
 
-        [Required]
-        public required string UserName { get; set; }
+        public string? UserName { get; set; }
 
         [Display(Name = "Grupo")]
         [Required]

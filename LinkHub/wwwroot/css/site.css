@@ -64,8 +64,6 @@ a {
     .navbar-nav .navbar-text {
         display: none !important;
     }
-
-
 }
 
 .btn-user-settings {
@@ -77,9 +75,12 @@ a {
 }
 
 /* Configurações de exibição do Toastify */
-.notyf__toast {
+.notyf {
     margin-top: 50px !important;
-    margin-right: 5px !important;
+}
+
+.notyf__toast {
+    max-width: 500px !important;
 }
 
 /* Cards da Página Home */

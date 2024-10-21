@@ -8,26 +8,27 @@ namespace LinkHub.Models
         public int Id { get; set; }
 
 		[Display(Name = "Dominio FQDN")]
-        [Required]
+        [Required(ErrorMessage = "O campo {0} é obrigatório.")]
 		public required string FqdnDomain { get; set; }
 
         [Display(Name = "Porta")]
-        [Required]
+        [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         public required int Port { get; set; }
 
         [Display(Name = "Dominio NetBios")]
-        [Required]
+        [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         public required string NetBiosDomain { get; set; }
-
-		public required string BaseDn { get; set; }
+                
+        [Required(ErrorMessage = "O campo {0} é obrigatório.")]
+        public required string BaseDn { get; set; }
 
         [Display(Name = "Usuário")]
-        [Required]
+        [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         public required string UserDn { get; set; }
 
         [DataType(DataType.Password)]
         [Display(Name = "Senha")]
-        [Required]
+        [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         public required string Password { get; set; }
 
         public void EncryptPassword(IDataProtector protector)

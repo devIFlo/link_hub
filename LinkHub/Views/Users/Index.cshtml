@@ -4,14 +4,17 @@
     ViewData["Title"] = "Usuários";
 }
 
-<h1 class="text-center">@ViewData["Title"]</h1>
-
-<form asp-action="SyncLdapUsers" method="post" class="text-end">
-    <button type="submit" class="btn btn-success">Sincronizar Usuários</button>
-    <a href="javascript:" class="btn-user-settings">
-        <i class="fa-solid fa-gear fa-xl"></i>
-    </a>
-</form>
+<div class="d-flex justify-content-between align-items-center">
+    <h2>@ViewData["Title"]</h2>
+    <form asp-action="SyncLdapUsers" method="post">
+        <button type="submit" class="btn btn-success">
+            Sincronizar Usuários <i class="fa-solid fa-sync"></i>
+        </button>
+        <a href="javascript:" class="btn-user-settings">
+            <i class="fa-solid fa-gear fa-xl"></i>
+        </a>
+    </form>
+</div>
 
 <br />
 

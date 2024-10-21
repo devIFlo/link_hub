@@ -111,7 +111,15 @@ namespace LinkHub.Services
             ldapConnection.SessionOptions.ProtocolVersion = 3;
             ldapConnection.SessionOptions.ReferralChasing = ReferralChasingOptions.None;
             ldapConnection.Timeout = TimeSpan.FromMinutes(1);
-            ldapConnection.Bind();
+            
+			try
+            {
+                ldapConnection.Bind();
+            }
+            catch (LdapException ex)
+            {
+                throw new LdapException("Falha ao conectar ao servidor LDAP. Verifique as configurações da conexão.", ex);
+            }
 
             var filter = "(objectClass=person)";
             var searchRequest = new SearchRequest(baseDn, filter, SearchScope.Subtree, null);
