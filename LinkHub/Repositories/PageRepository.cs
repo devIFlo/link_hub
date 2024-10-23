@@ -56,10 +56,10 @@ namespace LinkHub.Repositories
         {
             Page pageDB = await GetPageAsync(id);
 
-            if (pageDB == null) throw new Exception("Houve um erro na deleção da Página!");
+            if (pageDB == null) throw new Exception("Ocorreu um erro ao remover a página!");
 
             _context.Pages.Remove(pageDB);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
         }

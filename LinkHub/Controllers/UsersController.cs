@@ -142,8 +142,8 @@ namespace LinkHub.Controllers
 
 					if (userRoles.Any())
 					{
-						var remevoRoleResult = await _userManager.RemoveFromRolesAsync(user, userRoles);
-						if (!remevoRoleResult.Succeeded)
+						var removeRoleResult = await _userManager.RemoveFromRolesAsync(user, userRoles);
+						if (!removeRoleResult.Succeeded)
 						{
 							_notifyService.Error("Erro ao remover os grupos existentes.");
 							return View(model);

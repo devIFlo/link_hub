@@ -1,4 +1,5 @@
-﻿using LinkHub.Models;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using LinkHub.Models;
 using LinkHub.Repositories;
 using LinkHub.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -14,22 +15,27 @@ namespace LinkHub.Controllers
         private readonly IPageRepository _pageRepository;
         private readonly IUserPagePermissionRepository _userPagePermissionRepository;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly INotyfService _notifyService;
 
         public PagesController(IPageRepository pageRepository,
             UserManager<ApplicationUser> userManager,
-            IUserPagePermissionRepository userPagePermissionRepository)
+            IUserPagePermissionRepository userPagePermissionRepository,
+            INotyfService notifyService)
         {
             _pageRepository = pageRepository;
             _userManager = userManager;
             _userPagePermissionRepository = userPagePermissionRepository;
+            _notifyService = notifyService;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
             var pages = _pageRepository.GetPages();
             return View(pages);
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
             return PartialView("_Create");
@@ -39,21 +45,32 @@ namespace LinkHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Page page)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                await _pageRepository.Add(page);
+                _notifyService.Warning("Preencha todos os campos obrigatórios.");
                 return RedirectToAction("Index");
             }
 
-            return View();
+            try
+            {
+                await _pageRepository.Add(page);
+                _notifyService.Success("Página adicionada com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                _notifyService.Error("Ocorreu um erro ao adicionar a página: " + ex.Message);
+            }
+
+            return RedirectToAction("Index");
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             var page = await _pageRepository.GetPageAsync(id);
             if (page == null)
             {
-                return NotFound();
+                _notifyService.Error("Página não encontrada!");
             }
 
             return PartialView("_Edit", page);
@@ -63,17 +80,32 @@ namespace LinkHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Page page)
         {
-            await _pageRepository.Update(page);
+            if (!ModelState.IsValid)
+            {
+                _notifyService.Warning("Preencha todos os campos obrigatórios.");
+                return RedirectToAction("Index");
+            }
+
+            try
+            {
+                await _pageRepository.Update(page);
+                _notifyService.Success("Página atualizada com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                _notifyService.Error("Ocorreu um erro ao adicionar a página: " + ex.Message);
+            }                       
 
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
         public async Task<IActionResult> Permission(int id)
         {
             var page = await _pageRepository.GetPageAsync(id);
             if (page == null)
             {
-                return NotFound();
+                _notifyService.Error("Página não encontrada!");
             }
 
             var selectedUserIds = await _userPagePermissionRepository.GetUsersPerPageAsync(id);
@@ -95,27 +127,37 @@ namespace LinkHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Permission(PermissionViewModel permission)
         {
-            var pageId = permission.PageId;
-            var userIds = permission.SelectedUserIds;
+            try
+            {
+                var pageId = permission.PageId;
+                var userIds = permission.SelectedUserIds;
 
-            if (userIds != null)
+                if (userIds != null)
+                {
+                    await _userPagePermissionRepository.Update(pageId, userIds);
+                } 
+                else
+                {
+                    await _userPagePermissionRepository.DeleteAllPagePermissions(pageId);
+                }
+
+                _notifyService.Success("Permissões atualizadas com sucesso.");
+            }
+            catch (Exception ex)
             {
-                await _userPagePermissionRepository.Update(pageId, userIds);
-            } 
-            else
-            {
-                await _userPagePermissionRepository.DeleteAllPagePermissions(pageId);
-            }                       
+                _notifyService.Error("Não foi possivel atualizar as permissões da página: " + ex.Message);
+            }
 
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             Page page = await _pageRepository.GetPageAsync(id);
             if(page == null)
             {
-                return NotFound();
+                _notifyService.Error("Página não encontrada!");
             }
 
             return PartialView("_Delete", page);
@@ -123,9 +165,18 @@ namespace LinkHub.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            _pageRepository.Delete(id);
+            try
+            {
+                await _pageRepository.Delete(id);
+                _notifyService.Success("Página removida com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                _notifyService.Success(ex.Message);
+            }
+            
             return RedirectToAction("Index");
         }
     }

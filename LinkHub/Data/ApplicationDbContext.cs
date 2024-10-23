@@ -29,12 +29,14 @@ namespace LinkHub.Data
             modelBuilder.Entity<UserPagePermission>()
                 .HasOne(upp => upp.User)
                 .WithMany()
-                .HasForeignKey(upp => upp.UserId);
+                .HasForeignKey(upp => upp.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<UserPagePermission>()
                 .HasOne(upp => upp.Page)
                 .WithMany()
-                .HasForeignKey(upp => upp.PageId);
+                .HasForeignKey(upp => upp.PageId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<UserPagePermission>()
                 .HasIndex(upp => new { upp.UserId, upp.PageId })
