@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Link>
+﻿@model HomePageViewModel
 
 @{
     Layout = "_LayoutLinks";
@@ -10,7 +10,7 @@
 <div class="text-center">
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            @foreach (var tab in (IEnumerable<Category>)ViewBag.Categories) //Gera as abas de cada categoria.
+            @foreach (var tab in Model.Categories)
             {
                 string active = contTab == 0 ? "active" : "";
 
@@ -24,13 +24,13 @@
     </nav>
     <br />
     <div class="tab-content" id="nav-tabContent">
-        @foreach (var tab in (IEnumerable<Category>)ViewBag.Categories) //Gera o conteúdo das abas.
+        @foreach (var tab in Model.Categories)
         {
             string active = contTabContent == 0 ? "show active" : "";
 
             <div class="tab-pane fade @active" id="nav-@tab.Name" role="tabpanel" aria-labelledby="nav-@tab.Name-tab">
                 <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4">
-                    @foreach (var tabContent in Model)
+                    @foreach (var tabContent in Model.Links)
                     {
                         if (tab.Name == tabContent.Category.Name)
                         {

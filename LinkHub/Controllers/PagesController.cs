@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LinkHub.Controllers
 {
@@ -15,17 +16,17 @@ namespace LinkHub.Controllers
         private readonly IPageRepository _pageRepository;
         private readonly IUserPagePermissionRepository _userPagePermissionRepository;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly INotyfService _notifyService;
+        private readonly INotyfService _notyfService;
 
         public PagesController(IPageRepository pageRepository,
             UserManager<ApplicationUser> userManager,
             IUserPagePermissionRepository userPagePermissionRepository,
-            INotyfService notifyService)
+            INotyfService notyfService)
         {
             _pageRepository = pageRepository;
             _userManager = userManager;
             _userPagePermissionRepository = userPagePermissionRepository;
-            _notifyService = notifyService;
+            _notyfService = notyfService;
         }
 
         [HttpGet]
@@ -47,18 +48,18 @@ namespace LinkHub.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _notifyService.Warning("Preencha todos os campos obrigatórios.");
+                _notyfService.Warning("Preencha todos os campos obrigatórios.");
                 return RedirectToAction("Index");
             }
 
             try
             {
                 await _pageRepository.Add(page);
-                _notifyService.Success("Página adicionada com sucesso.");
+                _notyfService.Success("Página adicionada com sucesso.");
             }
             catch (Exception ex)
             {
-                _notifyService.Error("Ocorreu um erro ao adicionar a página: " + ex.Message);
+                _notyfService.Error("Ocorreu um erro ao adicionar a página: " + ex.Message);
             }
 
             return RedirectToAction("Index");
@@ -70,7 +71,7 @@ namespace LinkHub.Controllers
             var page = await _pageRepository.GetPageAsync(id);
             if (page == null)
             {
-                _notifyService.Error("Página não encontrada!");
+                return Json(new { message = "Página não encontrada!" });
             }
 
             return PartialView("_Edit", page);
@@ -82,18 +83,18 @@ namespace LinkHub.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _notifyService.Warning("Preencha todos os campos obrigatórios.");
+                _notyfService.Warning("Preencha todos os campos obrigatórios.");
                 return RedirectToAction("Index");
             }
 
             try
             {
                 await _pageRepository.Update(page);
-                _notifyService.Success("Página atualizada com sucesso.");
+                _notyfService.Success("Página atualizada com sucesso.");
             }
             catch (Exception ex)
             {
-                _notifyService.Error("Ocorreu um erro ao adicionar a página: " + ex.Message);
+                _notyfService.Error("Ocorreu um erro ao atualizar a página: " + ex.Message);
             }                       
 
             return RedirectToAction("Index");
@@ -105,7 +106,7 @@ namespace LinkHub.Controllers
             var page = await _pageRepository.GetPageAsync(id);
             if (page == null)
             {
-                _notifyService.Error("Página não encontrada!");
+                return Json(new { message = "Página não encontrada!" });
             }
 
             var selectedUserIds = await _userPagePermissionRepository.GetUsersPerPageAsync(id);
@@ -141,11 +142,11 @@ namespace LinkHub.Controllers
                     await _userPagePermissionRepository.DeleteAllPagePermissions(pageId);
                 }
 
-                _notifyService.Success("Permissões atualizadas com sucesso.");
+                _notyfService.Success("Permissões atualizadas com sucesso.");
             }
             catch (Exception ex)
             {
-                _notifyService.Error("Não foi possivel atualizar as permissões da página: " + ex.Message);
+                _notyfService.Error("Não foi possivel atualizar as permissões da página: " + ex.Message);
             }
 
             return RedirectToAction("Index");
@@ -157,7 +158,7 @@ namespace LinkHub.Controllers
             Page page = await _pageRepository.GetPageAsync(id);
             if(page == null)
             {
-                _notifyService.Error("Página não encontrada!");
+                return Json(new { message = "Página não encontrada!" });
             }
 
             return PartialView("_Delete", page);
@@ -170,11 +171,11 @@ namespace LinkHub.Controllers
             try
             {
                 await _pageRepository.Delete(id);
-                _notifyService.Success("Página removida com sucesso.");
+                _notyfService.Success("Página removida com sucesso.");
             }
             catch (Exception ex)
             {
-                _notifyService.Success(ex.Message);
+                _notyfService.Error("Ocorreu um erro ao remover a página: " + ex.Message);
             }
             
             return RedirectToAction("Index");

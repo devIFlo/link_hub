@@ -1,4 +1,4 @@
-﻿@model LinkHub.Models.Link
+﻿@model LinkViewModel
 
 <div class="modal-header">
     <h5 class="modal-title">Adicionar novo Link</h5>
@@ -19,13 +19,17 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="PageId" class="control-label"></label>
+                <select asp-for="PageId" class="form-control" asp-items="@(new SelectList(Model.Pages, "Id", "Name"))" id="PageId" onchange="filterCategories()">
+                    <option></option>
+                </select>                
+                <span asp-validation-for="PageId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="CategoryId" class="control-label"></label>
-                @Html.DropDownListFor(model => model.CategoryId, ((IEnumerable<Category>)ViewBag.Categories).Select(option => new SelectListItem
-                {
-                    Text = option.Name,
-                    Value = option.Id.ToString(),
-                    Selected = (Model != null) && (Model.CategoryId == option.Id)
-                }), "Selecione uma categoria...", new { @class = "form-control" })
+                <select asp-for="CategoryId" class="form-control" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))" id="CategoryId" disabled>
+                    <option></option>
+                </select>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
             <div class="form-group">

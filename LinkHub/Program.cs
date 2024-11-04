@@ -5,6 +5,7 @@ using LinkHub.Repositories;
 using LinkHub.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.InteropServices;
@@ -28,6 +29,8 @@ if (!Directory.Exists(keyPath))
 	Directory.CreateDirectory(keyPath);
 }
 builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(keyPath));
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 //Adiciona a dependência do Toastify
 builder.Services.AddNotyf(config =>

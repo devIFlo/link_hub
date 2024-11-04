@@ -1,6 +1,7 @@
 ﻿using LinkHub.Data;
 using LinkHub.Models;
 using LinkHub.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace LinkHub.Repositories
 {
@@ -15,14 +16,33 @@ namespace LinkHub.Repositories
             _imageStorage = imageStorage;
         }
 
-        public Link GetLink(int id)
+        public async Task<Link> GetLinkAsync(int id)
         {
-            return _context.Links.FirstOrDefault(x => x.Id == id);
+            return await _context.Links
+                .Include(l => l.Category)
+                .FirstOrDefaultAsync(l => l.Id == id);
         }
 
-        public List<Link> GetLinks()
+        public async Task<List<Link>> GetLinksAsync()
         {
-            return _context.Links.ToList();
+            return await _context.Links.ToListAsync();
+        }
+
+        public async Task<List<Link>> GetLinksPerPageAsync(string page)
+        {
+            return await _context.Links
+                .Where(l => l.Category.Page.Name == page)
+                .ToListAsync();
+        }
+
+        public async Task<List<Link>> GetLinksPerUserAsync(string userId)
+        {
+            return await _context.Links
+           .Include(c => c.Category)
+           .ThenInclude(c => c.Page)
+           .Where(c => _context.UserPagePermissions
+               .Any(upp => upp.PageId == c.Category.PageId && upp.UserId == userId))
+           .ToListAsync();
         }
 
         public List<Category> GetCategories()
@@ -32,11 +52,6 @@ namespace LinkHub.Repositories
 
         public async Task<Link> Add(Link link)
         {
-            if (link.Image != null)
-            {
-                link.FileName = await _imageStorage.AddImageAsync(link.Image);
-            }
-
             _context.Links.Add(link);
             await _context.SaveChangesAsync();
 
@@ -45,15 +60,9 @@ namespace LinkHub.Repositories
 
         public async Task<Link> Update(Link link)
         {
-            Link linkDB = GetLink(link.Id);
+            Link linkDB = await GetLinkAsync(link.Id);
 
             if (linkDB == null) throw new Exception("Houve um erro na atualização do Serviço!");
-
-            if (link.Image != null)
-            {
-                _imageStorage.DeleteImage(link.FileName);
-                link.FileName = await _imageStorage.AddImageAsync(link.Image);
-            }
 
             linkDB.Name = link.Name;
             linkDB.Description = link.Description;
@@ -67,16 +76,10 @@ namespace LinkHub.Repositories
             return linkDB;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(Link link)
         {
-            Link linkDB = GetLink(id);
-
-            if (linkDB == null) throw new Exception("Houve um erro na deleção do Serviço!");
-
-            _imageStorage.DeleteImage(linkDB.FileName);
-
-            _context.Links.Remove(linkDB);
-            _context.SaveChanges();
+            _context.Links.Remove(link);
+            await _context.SaveChangesAsync();
 
             return true;
         }

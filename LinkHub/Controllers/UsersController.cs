@@ -19,20 +19,20 @@ namespace LinkHub.Controllers
 		private readonly RoleManager<IdentityRole> _roleManager;
 		private readonly LdapSyncService _ldapSyncService;
 		private readonly ILdapSettingsRepository _ldapSettingsRepository;
-        private readonly INotyfService _notifyService;
+        private readonly INotyfService _notyfService;
 
 
         public UsersController(UserManager<ApplicationUser> userManager,
 			RoleManager<IdentityRole> roleManager,
 			LdapSyncService ldapSyncService, 
 			ILdapSettingsRepository ldapSettingsRepository,
-            INotyfService notifyService)
+            INotyfService notyfService)
 		{
 			_userManager = userManager;
 			_ldapSyncService = ldapSyncService;
 			_ldapSettingsRepository = ldapSettingsRepository;
 			_roleManager = roleManager;
-            _notifyService = notifyService;
+            _notyfService = notyfService;
         }
 
 		public IActionResult Index()
@@ -47,24 +47,25 @@ namespace LinkHub.Controllers
 			try
 			{
 				await _ldapSyncService.SyncUsersAsync();
-				_notifyService.Success("Usuários sincronizados com sucesso!");
+                _notyfService.Success("Usuários sincronizados com sucesso!");
 			}
 			catch (InvalidOperationException ex)
 			{
-				_notifyService.Warning(ex.Message);
+                _notyfService.Warning(ex.Message);
 			}
 			catch (LdapException ex)
 			{
-				_notifyService.Error(ex.Message);
+                _notyfService.Error(ex.Message);
 			}
 			catch (Exception)
 			{
-				_notifyService.Error("Ocorreu um erro inesperado. Procure o administrador do sistema.");
+                _notyfService.Error("Ocorreu um erro inesperado. Procure o administrador do sistema.");
 			}
 
             return RedirectToAction("Index");
         }
 
+		[HttpGet]
 		public IActionResult Settings()
 		{
 			LdapSettings ldapSettings = _ldapSettingsRepository.GetLdapSettings();
@@ -87,28 +88,29 @@ namespace LinkHub.Controllers
 				if (ldapSettingsDB == null)
 				{
                     await _ldapSettingsRepository.Add(ldapSettings);
-					_notifyService.Success("Configurações LDAP salvas com sucesso.");
+                    _notyfService.Success("Configurações LDAP salvas com sucesso.");
                 } 
 				else
 				{
 					await _ldapSettingsRepository.Update(ldapSettings);
-                    _notifyService.Success("Configurações LDAP atualizadas com sucesso.");
+                    _notyfService.Success("Configurações LDAP atualizadas com sucesso.");
                 }
 
                 return RedirectToAction("Index");
             }
 
-			_notifyService.Warning("Preencha todos os campos obrigatórios.");
+            _notyfService.Warning("Preencha todos os campos obrigatórios.");
             return RedirectToAction("Index");
         }
 
+		[HttpGet]
 		public async Task<IActionResult> Group(string id)
 		{
             var user = await _userManager.FindByIdAsync(id);
 
             if (user == null)
 			{
-				return NotFound();
+                return Json(new { message = "Usuário não encontrado!" });
             }
 
             var userRoles = await _userManager.GetRolesAsync(user);
@@ -145,7 +147,7 @@ namespace LinkHub.Controllers
 						var removeRoleResult = await _userManager.RemoveFromRolesAsync(user, userRoles);
 						if (!removeRoleResult.Succeeded)
 						{
-							_notifyService.Error("Erro ao remover os grupos existentes.");
+                            _notyfService.Error("Erro ao remover os grupos existentes.");
 							return View(model);
 						}
 					}
@@ -153,27 +155,28 @@ namespace LinkHub.Controllers
 					var addRoleResult = await _userManager.AddToRoleAsync(user, model.SelectedRole);
 					if (!addRoleResult.Succeeded)
 					{
-                        _notifyService.Error("Erro ao adicionar o novo grupo.");
+                        _notyfService.Error("Erro ao adicionar o novo grupo.");
 						return View(model);
 					}
 
-					_notifyService.Success("Grupo alterado com sucesso!");
+                    _notyfService.Success("Grupo alterado com sucesso!");
 
 					return RedirectToAction("Index");
 				}
 			}
 
-            _notifyService.Error("Usuário não encontrado.");
+            _notyfService.Error("Usuário não encontrado.");
 
             return RedirectToAction("Index");
         }
 
+		[HttpGet]
 		public async Task<IActionResult> Delete(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
-                return NotFound();
+                return Json(new { message = "Usuário não encontrado!" });
             }
 
             return PartialView("_Delete", user);
@@ -187,7 +190,7 @@ namespace LinkHub.Controllers
 
 			if (user == null)
 			{
-                _notifyService.Error($"Usuário com Id = {id} não foi encontrado");
+                _notyfService.Error($"Usuário com Id = {id} não foi encontrado");
             }
 			else
 			{
@@ -195,13 +198,13 @@ namespace LinkHub.Controllers
 
 				if (result.Succeeded)
 				{
-					_notifyService.Success($"Usuário {user.UserName} excluído com sucesso.");
+                    _notyfService.Success($"Usuário {user.UserName} excluído com sucesso.");
 					
 				}
 
 				foreach (var error in result.Errors)
 				{
-					_notifyService.Error(error.Description);
+                    _notyfService.Error(error.Description);
 				}
 			}
 

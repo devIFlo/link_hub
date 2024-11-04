@@ -8,14 +8,12 @@ namespace LinkHub.Models
         public int Id { get; set; }
 
         [Display(Name = "Nome")]
-        public string? Name { get; set; }
+        public required string Name { get; set; }
 
         public int PageId { get; set; }
 
         [Display(Name = "Página")]
         [ForeignKey("PageId")]
-        public Page Page { get; set; }
-
-        public ICollection<Link> Services { get; set; } = new List<Link>();
+        public Page? Page { get; set; }
     }
 }

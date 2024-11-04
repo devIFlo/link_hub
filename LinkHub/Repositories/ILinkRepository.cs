@@ -4,11 +4,13 @@ namespace LinkHub.Repositories
 {
     public interface ILinkRepository
     {
-        List<Link> GetLinks();
-        Link GetLink(int id);
+        Task<List<Link>> GetLinksAsync();
+        Task<Link> GetLinkAsync(int id);
+        Task<List<Link>> GetLinksPerPageAsync(string page);
+        Task<List<Link>> GetLinksPerUserAsync(string userId);
         List<Category> GetCategories();
         Task<Link> Add(Link link);
         Task<Link> Update(Link link);
-        bool Delete(int id);
+        Task<bool> DeleteAsync(Link link);
     }
 }

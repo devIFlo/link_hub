@@ -1,5 +1,6 @@
 using LinkHub.Models;
 using LinkHub.Repositories;
+using LinkHub.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -28,13 +29,20 @@ namespace LinkHub.Controllers
 
         [AllowAnonymous]
         [HttpGet("/Home/Link/{page}")]
-        public IActionResult Link(string page)
+        public async Task<IActionResult> Link(string page)
         {
-            ViewBag.Categories = _categoryRepository.GetCategories().Where(c => c.Page.Name == page);
+            var categories = await _categoryRepository.GetCategoriesPerPageAsync(page);
+            var links = await _linkRepository.GetLinksPerPageAsync(page);
+
+            var homePageViewModel = new HomePageViewModel
+            {
+                Categories = categories,
+                Links = links
+            };
+
             ViewData["Page"] = page;
 
-            var links = _linkRepository.GetLinks().Where(l => l.Category.Page.Name == page);
-            return View(links);
+            return View(homePageViewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

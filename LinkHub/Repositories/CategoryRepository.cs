@@ -18,9 +18,9 @@ namespace LinkHub.Repositories
             return await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public List<Category> GetCategories()
+        public async Task<List<Category>> GetCategories()
         {
-            return _context.Categories.Include(c => c.Page).ToList();
+            return await _context.Categories.Include(c => c.Page).ToListAsync();
         }
 
         public async Task<List<Category>> GetCategoriesPerUserAsync(string userId)
@@ -29,6 +29,22 @@ namespace LinkHub.Repositories
                 .Include(c => c.Page)
                 .Where(c => _context.UserPagePermissions
                     .Any(upp => upp.PageId == c.PageId && upp.UserId == userId))
+                .ToListAsync();
+        }
+
+        public async Task<List<Category>> GetCategoriesPerPageAsync(int pageId)
+        {
+            return await _context.Categories
+                .Include(c => c.Page)
+                .Where(c => c.PageId == pageId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Category>> GetCategoriesPerPageAsync(string pageName)
+        {
+            return await _context.Categories
+                .Include(c => c.Page)
+                .Where(c => c.Page.Name == pageName)
                 .ToListAsync();
         }
 

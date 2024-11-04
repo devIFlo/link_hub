@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace LinkHub.Models
 {
@@ -9,27 +8,21 @@ namespace LinkHub.Models
 
         [Required(ErrorMessage = "O nome é obrigatório.")]
         [Display(Name = "Nome")]
-        public string Name { get; set; } = null!;
+        public required string Name { get; set; }
 
         [Display(Name = "Descrição")]
         public string? Description { get; set; }
 
         [Required(ErrorMessage = "O link é obrigatório.")]
         [Display(Name = "Link")]
-        public string Url { get; set; } = null!;
+        public required string Url { get; set; }
 
-        [Required]
-        public required Category Category { get; set; }
+        public Category? Category { get; set; }
 
         [Required(ErrorMessage = "A categoria é obrigatória.")]
         [Display(Name = "Categoria")]
         public int CategoryId { get; set; }
 
-        public string FileName { get; set; } = null!;
-
-        [Required(ErrorMessage = "A imagem é obrigatória.")]
-        [NotMapped]
-        [Display(Name = "Imagem")]
-        public IFormFile? Image { get; set; }
+        public required string FileName { get; set; }
     }
 }

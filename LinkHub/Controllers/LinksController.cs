@@ -1,6 +1,11 @@
-﻿using LinkHub.Models;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using AutoMapper;
+using LinkHub.Models;
 using LinkHub.Repositories;
+using LinkHub.Services;
+using LinkHub.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinkHub.Controllers
@@ -9,62 +14,180 @@ namespace LinkHub.Controllers
     public class LinksController : Controller
     {
         private readonly ILinkRepository _linkRepository;
+        private readonly IPageRepository _pageRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly INotyfService _notyfService;
+        private readonly ImageStorage _imageStorage;
+        private readonly IMapper _mapper;
 
-        public LinksController(ILinkRepository linkRepository)
+        public LinksController(ILinkRepository linkRepository,
+            ICategoryRepository categoryRepository,
+            IPageRepository pageRepository,
+            UserManager<ApplicationUser> userManager,
+            INotyfService notyfService,
+            ImageStorage imageStorage,
+            IMapper mapper)
         {
             _linkRepository = linkRepository;
+            _categoryRepository = categoryRepository;
+            _pageRepository = pageRepository;            
+            _userManager = userManager;
+            _notyfService = notyfService;
+            _imageStorage = imageStorage;
+            _mapper = mapper;
+            
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
-            List<Link> links = _linkRepository.GetLinks();
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user?.Id;
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            List<Link> links = await _linkRepository.GetLinksPerUserAsync(userId);
             return View(links);
         }
 
-        public IActionResult Create()
+        [HttpGet]
+        public async Task<IActionResult> Create()
         {
-            ViewBag.Categories = _linkRepository.GetCategories();
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user?.Id;
 
-            return PartialView("_Create");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Link service)
-        {
-            await _linkRepository.Add(service);
-
-            return RedirectToAction("Index");
-        }
-
-        public IActionResult Edit(int id)
-        {
-            ViewBag.Categories = _linkRepository.GetCategories();
-
-            Link link = _linkRepository.GetLink(id);
-            if (link == null)
+            if (userId == null)
             {
-                return NotFound();
+                return RedirectToAction("Login", "Account");
             }
 
-            return PartialView("_Edit", link);
+            var pages = await _pageRepository.GetPagePerUserAsync(userId);            
+
+            var linkView = new LinkViewModel
+            {
+                Pages = pages,
+                Categories = new List<Category>()
+            };
+                        
+            return PartialView("_Create", linkView);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> FilterCategories(int pageId)
+        {
+            var categories = await _categoryRepository.GetCategoriesPerPageAsync(pageId);
+
+            return Json(categories);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Link link)
+        public async Task<IActionResult> Create(LinkViewModel linkViewModel)
         {
-            await _linkRepository.Update(link);
+            if (!ModelState.IsValid)
+            {
+                _notyfService.Warning("Preencha todos os campos obrigatórios.");
+                return RedirectToAction("Index");
+            }
+
+            try
+            {
+                var link = _mapper.Map<Link>(linkViewModel);
+
+                if (linkViewModel.Image != null)
+                {
+                    link.FileName = await _imageStorage.AddImageAsync(linkViewModel.Image);
+                }
+
+                await _linkRepository.Add(link);
+                _notyfService.Success("Link adicionado com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                _notyfService.Error("Ocorreu um erro ao adicionar o link: " + ex.Message);
+            }
 
             return RedirectToAction("Index");
         }
 
-        public IActionResult Delete(int id)
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
         {
-            Link link = _linkRepository.GetLink(id);
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user?.Id;
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var link = await _linkRepository.GetLinkAsync(id);
             if (link == null)
             {
-                return NotFound();
+                return Json(new { message = "Link não encontrado!" });
+            }
+
+            if (link.Category == null)
+            {
+                return Json(new { message = "Categoria do link não encontrada!" });
+            }
+
+            var pageId = link.Category.PageId;
+
+            var pages = await _pageRepository.GetPagePerUserAsync(userId);
+            var categories = await _categoryRepository.GetCategoriesPerPageAsync(pageId);
+
+            var linkViewModel = _mapper.Map<LinkViewModel>(link);
+
+            linkViewModel.Pages = pages;
+            linkViewModel.PageId = pageId;
+            linkViewModel.Categories = categories;
+
+            return PartialView("_Edit", linkViewModel);
+        }
+
+        //Alterar forma como salva a imagem para que caso não queira alterar a imagem, não seja necessário incluir novamente.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(LinkViewModel linkViewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                _notyfService.Warning("Preencha todos os campos obrigatórios.");
+                return RedirectToAction("Index");
+            }
+
+            try
+            {
+                var link = _mapper.Map<Link>(linkViewModel);
+
+                if (linkViewModel.Image != null && linkViewModel.FileName != null)
+                {
+                    _imageStorage.DeleteImage(linkViewModel.FileName);
+                    link.FileName = await _imageStorage.AddImageAsync(linkViewModel.Image);
+                }
+
+                await _linkRepository.Update(link);
+                _notyfService.Success("Link atualizado com sucesso.");
+            }
+            catch (Exception ex) 
+            {
+                _notyfService.Error("Ocorreu um erro ao adicionar o link: " + ex.Message);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            Link link = await _linkRepository.GetLinkAsync(id);
+            if (link == null)
+            {
+                return Json(new { message = "Link não encontrado!" });
             }
 
             return PartialView("_Delete", link);
@@ -72,9 +195,28 @@ namespace LinkHub.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            _linkRepository.Delete(id);
+            try
+            {
+                Link link = await _linkRepository.GetLinkAsync(id);
+
+                if (link == null)
+                {
+                    _notyfService.Error("link não encontrado!");
+                    return RedirectToAction("Index");
+                }
+
+                _imageStorage.DeleteImage(link.FileName);
+
+                await _linkRepository.DeleteAsync(link);
+                _notyfService.Success("Link removido com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                _notyfService.Error("Ocorreu um erro ao remover o link: " + ex.Message);
+            }
+
             return RedirectToAction("Index");
         }
     }

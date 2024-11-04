@@ -20,6 +20,12 @@ namespace LinkHub.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Link>()
+               .HasOne(c => c.Category)
+               .WithMany()
+               .HasForeignKey(c => c.CategoryId)
+               .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<Category>()
                 .HasOne(c => c.Page)
                 .WithMany()
