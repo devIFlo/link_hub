@@ -19,10 +19,9 @@ namespace LinkHub.ViewModels
         [Display(Name = "Link")]
         public string Url { get; set; } = null!;
 
-        [Required(ErrorMessage = "A imagem é obrigatória.")]
-        [NotMapped]
         [Display(Name = "Imagem")]
         public IFormFile? Image { get; set; }
+        
         public string? FileName { get; set; }
 
         [Required(ErrorMessage = "Selecione uma categoria.")]

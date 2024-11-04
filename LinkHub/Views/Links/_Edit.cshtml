@@ -42,12 +42,12 @@
             <div class="form-group">
                 <label asp-for="Image" class="control-label"></label>
                 <div class="mb-3">
-                    <input asp-for="Image" class="form-control" type="file" id="formFile">
+                    <input asp-for="Image" class="form-control" type="file" id="formFile" onchange="previewImage(event)">
                 </div>
                 <span asp-validation-for="Image" class="text-danger"></span>
             </div>
             <div class="col-sm col-md-auto">
-                <img src="/images/@Html.DisplayFor(model => model.FileName)" class="card-img-top" alt="...">
+                <img id="imagePreview" src="/images/@Html.DisplayFor(model => model.FileName)" class="card-img-top" alt="...">
             </div>
             <div class="form-group modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>

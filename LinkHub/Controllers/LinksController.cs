@@ -149,7 +149,6 @@ namespace LinkHub.Controllers
             return PartialView("_Edit", linkViewModel);
         }
 
-        //Alterar forma como salva a imagem para que caso não queira alterar a imagem, não seja necessário incluir novamente.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(LinkViewModel linkViewModel)
@@ -164,7 +163,11 @@ namespace LinkHub.Controllers
             {
                 var link = _mapper.Map<Link>(linkViewModel);
 
-                if (linkViewModel.Image != null && linkViewModel.FileName != null)
+                if (linkViewModel.Image == null && linkViewModel.FileName != null)
+                {
+                    link.FileName = linkViewModel.FileName;
+                } 
+                else if (linkViewModel.Image != null && linkViewModel.FileName != null)
                 {
                     _imageStorage.DeleteImage(linkViewModel.FileName);
                     link.FileName = await _imageStorage.AddImageAsync(linkViewModel.Image);
