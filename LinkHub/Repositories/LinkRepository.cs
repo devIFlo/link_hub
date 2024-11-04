@@ -32,6 +32,7 @@ namespace LinkHub.Repositories
         {
             return await _context.Links
                 .Where(l => l.Category.Page.Name == page)
+                .OrderBy(l => l.Name)
                 .ToListAsync();
         }
 

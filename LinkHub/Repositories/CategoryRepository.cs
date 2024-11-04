@@ -37,6 +37,7 @@ namespace LinkHub.Repositories
             return await _context.Categories
                 .Include(c => c.Page)
                 .Where(c => c.PageId == pageId)
+                .OrderBy(c => c.Name)
                 .ToListAsync();
         }
 
@@ -45,6 +46,7 @@ namespace LinkHub.Repositories
             return await _context.Categories
                 .Include(c => c.Page)
                 .Where(c => c.Page.Name == pageName)
+                .OrderBy(c => c.Name)
                 .ToListAsync();
         }
 
