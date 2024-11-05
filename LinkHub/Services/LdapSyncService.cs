@@ -7,7 +7,7 @@ using System.Net;
 
 namespace LinkHub.Services
 {
-	public class LdapSyncService
+    public class LdapSyncService
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly ILogger<LdapSyncService> _logger;
@@ -52,7 +52,7 @@ namespace LinkHub.Services
 					}
 					else
 					{
-						_logger.LogError("Failed to create new user {UserName}: {Errors}", ldapUser.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
+						_logger.LogError("Falha ao criar o usuário {UserName}: {Errors}", ldapUser.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
 					}   					
 				}
 				else
@@ -79,16 +79,16 @@ namespace LinkHub.Services
 						var result = await _userManager.UpdateAsync(identityUser);
 						if (!result.Succeeded)
 						{
-							_logger.LogError("Failed to update user {UserName}: {Errors}", ldapUser.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
+							_logger.LogError("Falha ao atualizar o usuário {UserName}: {Errors}", ldapUser.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
 						}
 					}
 				}
 			}
 		}
 
-		private List<LdapUser> GetLdapUsers()
+		private List<LdapSyncModel> GetLdapUsers()
 		{
-			var ldapUsers = new List<LdapUser>();
+			var ldapUsers = new List<LdapSyncModel>();
 			var ldapSettings = _ldapSettingsRepository.GetLdapSettings();
 
             if (ldapSettings == null)
@@ -127,7 +127,7 @@ namespace LinkHub.Services
 
             foreach (SearchResultEntry entry in response.Entries)
             {
-                var ldapUser = new LdapUser
+                var ldapUser = new LdapSyncModel
                 {
                     UserName = entry.Attributes["sAMAccountName"]?[0]?.ToString(),
                     Email = entry.Attributes["mail"]?[0]?.ToString(),

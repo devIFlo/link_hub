@@ -1,5 +1,6 @@
 ﻿using LinkHub.Models;
 using LinkHub.Services;
+using LinkHub.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,7 +30,15 @@ namespace LinkHub.Controllers
 				return RedirectToAction("Index", "Home");
 			}
 
-			return View();
+            var model = new LoginViewModel();
+
+            var rememberedUsername = Request.Cookies["RememberedUsername"];
+            if (!string.IsNullOrEmpty(rememberedUsername))
+            {
+                model.Username = rememberedUsername;
+            }
+
+            return View(model);
         }
 
 		[HttpPost]
@@ -42,7 +51,21 @@ namespace LinkHub.Controllers
 
                     if (result.Succeeded)
                     {
-						return RedirectToAction("Index", "Home");
+                        if (model.RememberMe)
+                        {
+                            Response.Cookies.Append("RememberedUsername", model.Username, new CookieOptions
+                            {
+                                Expires = DateTime.UtcNow.AddDays(30),
+                                HttpOnly = true,
+                                SameSite = SameSiteMode.Lax
+                            });
+                        }
+                        else
+                        {
+                            Response.Cookies.Delete("RememberedUsername");
+                        }
+
+                        return RedirectToAction("Index", "Home");
 					}
 
                     ModelState.AddModelError(string.Empty, "Usuário ou senha incorreto.");
@@ -59,6 +82,21 @@ namespace LinkHub.Controllers
                     }
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    if (model.RememberMe)
+                    {
+                        Response.Cookies.Append("RememberedUsername", model.Username, new CookieOptions
+                        {
+                            Expires = DateTime.UtcNow.AddDays(30),
+                            HttpOnly = true,
+                            SameSite = SameSiteMode.Lax
+                        });
+                    }
+                    else
+                    {
+                        Response.Cookies.Delete("RememberedUsername");
+                    }
+
                     return RedirectToAction("Index", "Home");
                 }
 

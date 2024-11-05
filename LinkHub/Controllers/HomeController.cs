@@ -1,9 +1,7 @@
-using LinkHub.Models;
 using LinkHub.Repositories;
 using LinkHub.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace LinkHub.Controllers
 {
@@ -43,12 +41,6 @@ namespace LinkHub.Controllers
             ViewData["Page"] = page;
 
             return View(homePageViewModel);
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
