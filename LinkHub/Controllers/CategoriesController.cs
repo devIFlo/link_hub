@@ -156,6 +156,7 @@ namespace LinkHub.Controllers
             try
             { 
                 await _categoryRepository.DeleteAsync(id);
+
                 _notyfService.Success("Categoria removida com sucesso.");
             }
             catch (Exception ex) 

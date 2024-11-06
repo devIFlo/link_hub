@@ -11,8 +11,9 @@ namespace LinkHub.Data
         public DbSet<Page> Pages { get; set; }
         public DbSet<LdapSettings> LdapSettings { get; set; }
         public DbSet<UserPagePermission> UserPagePermissions { get; set; }
+        public DbSet<LogEntry> Logs { get; set; }
 
-		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
 
@@ -47,6 +48,8 @@ namespace LinkHub.Data
             modelBuilder.Entity<UserPagePermission>()
                 .HasIndex(upp => new { upp.UserId, upp.PageId })
                 .IsUnique();
+
+            modelBuilder.Entity<LogEntry>().HasNoKey();
         }
     }
 }

@@ -5,9 +5,10 @@ using LinkHub.Repositories;
 using LinkHub.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Serilog.Sinks.PostgreSQL;
+using Serilog;
 using System.Runtime.InteropServices;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,23 @@ var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseNpgsql(connectionString));
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.PostgreSQL(
+        connectionString: connectionString,
+        tableName: "Logs",
+        columnOptions: new Dictionary<string, ColumnWriterBase>
+        {
+            { "Message", new RenderedMessageColumnWriter() },
+            { "Level", new LevelColumnWriter() },
+            { "Timestamp", new TimestampColumnWriter() },
+            { "Exception", new ExceptionColumnWriter() },
+            { "Properties", new PropertiesColumnWriter() },
+            { "UserName", new SinglePropertyColumnWriter("UserName") }
+        })
+    .Enrich.FromLogContext()
+    .CreateLogger();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
         .AddEntityFrameworkStores<ApplicationDbContext>()

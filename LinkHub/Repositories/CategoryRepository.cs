@@ -1,16 +1,21 @@
 ﻿using LinkHub.Data;
 using LinkHub.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace LinkHub.Repositories
 {
     public class CategoryRepository : ICategoryRepository
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CategoryRepository(ApplicationDbContext context)
+
+        public CategoryRepository(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<Category> GetCategoryAsync(int id)
@@ -79,6 +84,12 @@ namespace LinkHub.Repositories
 
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
+
+            var userName = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+
+            Log.Information("O usuário {UserName} apagou a categoria '{CategoryName}' (ID: {CategoryId}) em {Timestamp}",
+                userName, category.Name, category.Id, DateTime.UtcNow);
+
 
             return true;
         }
