@@ -185,31 +185,31 @@ namespace LinkHub.Migrations
 
             modelBuilder.Entity("LinkHub.Models.LogEntry", b =>
                 {
-                    b.Property<string>("Exception")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    b.Property<string>("Level")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Exception")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("Level")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Properties")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("JSONB");
 
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime?>("Timestamp")
+                        .HasColumnType("TIMESTAMP");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Logs");
                 });

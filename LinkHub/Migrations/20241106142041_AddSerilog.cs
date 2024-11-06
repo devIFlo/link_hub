@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -25,16 +26,18 @@ namespace LinkHub.Migrations
                 name: "Logs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false),
-                    Message = table.Column<string>(type: "text", nullable: false),
-                    Level = table.Column<string>(type: "text", nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Exception = table.Column<string>(type: "text", nullable: false),
-                    Properties = table.Column<string>(type: "text", nullable: false),
-                    UserName = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Message = table.Column<string>(type: "TEXT", nullable: true),
+                    Level = table.Column<int>(type: "INTEGER", nullable: true),
+                    Timestamp = table.Column<DateTime>(type: "TIMESTAMP", nullable: true),
+                    Exception = table.Column<string>(type: "TEXT", nullable: true),
+                    Properties = table.Column<string>(type: "JSONB", nullable: true),
+                    UserName = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
+                    table.PrimaryKey("PK_Logs", x => x.Id);
                 });
         }
 

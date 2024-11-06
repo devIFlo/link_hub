@@ -49,7 +49,15 @@ namespace LinkHub.Data
                 .HasIndex(upp => new { upp.UserId, upp.PageId })
                 .IsUnique();
 
-            modelBuilder.Entity<LogEntry>().HasNoKey();
-        }
-    }
+			modelBuilder.Entity<LogEntry>(entity =>
+			{
+				entity.Property(e => e.Message).HasColumnType("TEXT").IsRequired(false);
+				entity.Property(e => e.Level).HasColumnType("INTEGER").IsRequired(false);  
+				entity.Property(e => e.Timestamp).HasColumnType("TIMESTAMP").IsRequired(false);
+				entity.Property(e => e.Exception).HasColumnType("TEXT").IsRequired(false);
+				entity.Property(e => e.Properties).HasColumnType("JSONB").IsRequired(false);
+				entity.Property(e => e.UserName).HasColumnType("TEXT").IsRequired(false);
+			});
+		}
+	}
 }

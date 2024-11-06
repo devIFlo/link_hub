@@ -20,19 +20,21 @@ var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseNpgsql(connectionString));
 
+Serilog.Debugging.SelfLog.Enable(msg => Console.WriteLine(msg));
+
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.PostgreSQL(
         connectionString: connectionString,
-        tableName: "Logs",
-        columnOptions: new Dictionary<string, ColumnWriterBase>
+        tableName: "\"Logs\"",
+		columnOptions: new Dictionary<string, ColumnWriterBase>
         {
-            { "Message", new RenderedMessageColumnWriter() },
-            { "Level", new LevelColumnWriter() },
-            { "Timestamp", new TimestampColumnWriter() },
-            { "Exception", new ExceptionColumnWriter() },
-            { "Properties", new PropertiesColumnWriter() },
-            { "UserName", new SinglePropertyColumnWriter("UserName") }
+            { "\"Message\"", new RenderedMessageColumnWriter() },
+            { "\"Level\"", new LevelColumnWriter() },
+            { "\"Timestamp\"", new TimestampColumnWriter() },
+            { "\"Exception\"", new ExceptionColumnWriter() },
+            { "\"Properties\"", new PropertiesColumnWriter() },
+            { "\"UserName\"", new SinglePropertyColumnWriter("UserName") }
         })
     .Enrich.FromLogContext()
     .CreateLogger();
