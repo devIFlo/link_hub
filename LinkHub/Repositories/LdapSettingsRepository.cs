@@ -1,6 +1,7 @@
 ﻿using LinkHub.Data;
 using LinkHub.Models;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.EntityFrameworkCore;
 
 namespace LinkHub.Repositories
 {
@@ -17,9 +18,9 @@ namespace LinkHub.Repositories
             _protector = _dataProtectionProvider.CreateProtector("LdapSettingsPasswordProtector");
         }
 
-        public LdapSettings GetLdapSettings()
+        public async Task<LdapSettings?> GetLdapSettings()
         {
-            return _context.LdapSettings.FirstOrDefault();
+            return await _context.LdapSettings.FirstOrDefaultAsync();
         }
 
         public async Task<LdapSettings> Add(LdapSettings ldapSettings)
@@ -34,7 +35,9 @@ namespace LinkHub.Repositories
 
         public async Task<LdapSettings> Update(LdapSettings ldapSettings)
         {
-            LdapSettings ldapSettingsDB = GetLdapSettings();
+            var ldapSettingsDB = await GetLdapSettings();
+
+            if (ldapSettingsDB == null) throw new InvalidOperationException("Configurações LDAP não encontradas.");
 
             ldapSettingsDB.FqdnDomain = ldapSettings.FqdnDomain;
             ldapSettingsDB.Port = ldapSettings.Port;

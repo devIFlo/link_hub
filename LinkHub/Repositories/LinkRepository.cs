@@ -16,7 +16,7 @@ namespace LinkHub.Repositories
             _imageStorage = imageStorage;
         }
 
-        public async Task<Link> GetLinkAsync(int id)
+        public async Task<Link?> GetLinkAsync(int id)
         {
             return await _context.Links
                 .Include(l => l.Category)
@@ -31,19 +31,17 @@ namespace LinkHub.Repositories
         public async Task<List<Link>> GetLinksPerPageAsync(string page)
         {
             return await _context.Links
-                .Where(l => l.Category.Page.Name == page)
+                .Where(l => l.Category != null && l.Category.Page != null && l.Category.Page.Name == page)
                 .OrderBy(l => l.Name)
                 .ToListAsync();
         }
 
         public async Task<List<Link>> GetLinksPerUserAsync(string userId)
         {
-            return await _context.Links
-           .Include(c => c.Category)
-           .ThenInclude(c => c.Page)
-           .Where(c => _context.UserPagePermissions
-               .Any(upp => upp.PageId == c.Category.PageId && upp.UserId == userId))
-           .ToListAsync();
+            return await _context.Links                      
+                .Where(c => _context.UserPagePermissions
+                    .Any(upp => c.Category != null && upp.PageId == c.Category.PageId && upp.UserId == userId))
+                .ToListAsync();
         }
 
         public List<Category> GetCategories()
@@ -61,7 +59,7 @@ namespace LinkHub.Repositories
 
         public async Task<Link> Update(Link link)
         {
-            Link linkDB = await GetLinkAsync(link.Id);
+            var linkDB = await GetLinkAsync(link.Id);
 
             if (linkDB == null) throw new Exception("Houve um erro na atualização do Serviço!");
 

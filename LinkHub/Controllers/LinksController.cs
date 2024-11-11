@@ -187,7 +187,7 @@ namespace LinkHub.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            Link link = await _linkRepository.GetLinkAsync(id);
+            var link = await _linkRepository.GetLinkAsync(id);
             if (link == null)
             {
                 return Json(new { message = "Link não encontrado!" });
@@ -202,7 +202,7 @@ namespace LinkHub.Controllers
         {
             try
             {
-                Link link = await _linkRepository.GetLinkAsync(id);
+                var link = await _linkRepository.GetLinkAsync(id);
 
                 if (link == null)
                 {

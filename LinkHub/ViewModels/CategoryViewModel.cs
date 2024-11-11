@@ -1,5 +1,4 @@
 ﻿using LinkHub.Models;
-using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
 namespace LinkHub.ViewModels

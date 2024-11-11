@@ -28,7 +28,7 @@ namespace LinkHub.Services
 			
         public async Task SyncUsersAsync()
 		{
-			var ldapUsers = GetLdapUsers();
+			var ldapUsers = await GetLdapUsers();
 			var identityUsers = _userManager.Users.ToList();
 				
 			foreach (var ldapUser in ldapUsers)
@@ -86,15 +86,12 @@ namespace LinkHub.Services
 			}
 		}
 
-		private List<LdapSyncModel> GetLdapUsers()
+		private async Task<List<LdapSyncModel>> GetLdapUsers()
 		{
 			var ldapUsers = new List<LdapSyncModel>();
-			var ldapSettings = _ldapSettingsRepository.GetLdapSettings();
+			var ldapSettings = await _ldapSettingsRepository.GetLdapSettings();
 
-            if (ldapSettings == null)
-            {
-                throw new InvalidOperationException("Configurações LDAP não encontradas.");
-            }
+            if (ldapSettings == null) throw new InvalidOperationException("Configurações LDAP não encontradas.");
 
             var fqdnDomain = ldapSettings.FqdnDomain;
             var port = ldapSettings.Port;

@@ -25,7 +25,7 @@ namespace LinkHub.Repositories
         {
             return await _context.UserPagePermissions
                 .Where(x => x.PageId == pageId)
-                .Select(x => x.UserId)
+                .Select(x => x.UserId ?? "")
                 .ToListAsync();
         }
 
@@ -51,7 +51,7 @@ namespace LinkHub.Repositories
             }                     
 
             var permissionsToRemove = existingPermissions
-                .Where(x => !userIds.Contains(x.UserId))
+                .Where(x => x.UserId != null && !userIds.Contains(x.UserId))
                 .ToList();            
 
             _context.UserPagePermissions.RemoveRange(permissionsToRemove);
@@ -65,9 +65,7 @@ namespace LinkHub.Repositories
         public async Task<bool> DeleteAllPagePermissions(int pageId)
         {
             var existingPermission = _context.UserPagePermissions
-                .Where(p => p.PageId == pageId);
-
-            if (existingPermission == null) throw new Exception("Houve um erro ao remover as permissões!");
+                .Where(p => p.PageId == pageId) ?? throw new Exception("Houve um erro ao remover as permissões!");
 
             _context.UserPagePermissions.RemoveRange(existingPermission);
             await _context.SaveChangesAsync();

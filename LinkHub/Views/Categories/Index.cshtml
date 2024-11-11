@@ -36,7 +36,10 @@
                         @Html.DisplayFor(modelItem => item.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Page.Name)
+                        @if (item.Page != null && item.Page.Name != null)
+                        {
+                            @Html.DisplayFor(modelItem => item.Page.Name)
+                        }
                     </td>
                     <td>
                         <a href="javascript:" category-id="@item.Id" class="btn btn-primary btn-category-edit">

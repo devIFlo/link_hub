@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LinkHub.Controllers
 {
@@ -155,7 +154,7 @@ namespace LinkHub.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            Page page = await _pageRepository.GetPageAsync(id);
+            var page = await _pageRepository.GetPageAsync(id);
             if(page == null)
             {
                 return Json(new { message = "Página não encontrada!" });

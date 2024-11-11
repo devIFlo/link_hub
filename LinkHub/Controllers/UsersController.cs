@@ -66,9 +66,9 @@ namespace LinkHub.Controllers
         }
 
 		[HttpGet]
-		public IActionResult Settings()
+		public async Task<IActionResult> Settings()
 		{
-			LdapSettings ldapSettings = _ldapSettingsRepository.GetLdapSettings();
+			var ldapSettings = await _ldapSettingsRepository.GetLdapSettings();
 
 			if (ldapSettings == null)
 			{
@@ -83,7 +83,7 @@ namespace LinkHub.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-                LdapSettings ldapSettingsDB = _ldapSettingsRepository.GetLdapSettings();
+                var ldapSettingsDB = await _ldapSettingsRepository.GetLdapSettings();
 
 				if (ldapSettingsDB == null)
 				{
@@ -134,11 +134,13 @@ namespace LinkHub.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Group(RoleViewModel model)
 		{
-			if (ModelState.IsValid)
+			var selectedRole = model.SelectedRole;
+
+            if (ModelState.IsValid)
 			{
 				var user = await _userManager.FindByIdAsync(model.UserId);
 
-				if (user != null)
+				if (user != null && selectedRole != null)
 				{
 					var userRoles = await _userManager.GetRolesAsync(user);
 
@@ -152,7 +154,7 @@ namespace LinkHub.Controllers
 						}
 					}
 
-					var addRoleResult = await _userManager.AddToRoleAsync(user, model.SelectedRole);
+					var addRoleResult = await _userManager.AddToRoleAsync(user, selectedRole);
 					if (!addRoleResult.Succeeded)
 					{
                         _notyfService.Error("Erro ao adicionar o novo grupo.");

@@ -72,6 +72,12 @@ namespace LinkHub.Controllers
                 return RedirectToAction("Index");
             }
 
+            if (string.IsNullOrEmpty(categoryView.Name))
+            {
+                _notyfService.Warning("O nome da categoria é obrigatório.");
+                return RedirectToAction("Index");
+            }
+
             try
             {
                 var category = new Category
@@ -102,6 +108,10 @@ namespace LinkHub.Controllers
 
             var user = await _userManager.GetUserAsync(User);
             var userId = user?.Id;
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
             var pages = await _pageRepository.GetPagePerUserAsync(userId);
             var categoryView = new CategoryViewModel
@@ -140,7 +150,7 @@ namespace LinkHub.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            Category category = await _categoryRepository.GetCategoryAsync(id);
+            var category = await _categoryRepository.GetCategoryAsync(id);
             if (category == null)
             {
                 return Json(new { message = "Categoria não encontrada!" });

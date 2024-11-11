@@ -13,7 +13,7 @@ namespace LinkHub.Repositories
             _context = context;
         }
 
-        public async Task<Page> GetPageAsync(int id)
+        public async Task<Page?> GetPageAsync(int id)
         {
             return await _context.Pages.FirstOrDefaultAsync(p => p.Id == id);
         }
@@ -41,7 +41,9 @@ namespace LinkHub.Repositories
 
         public async Task<Page> Update(Page page)
         {
-            Page pageDB = await GetPageAsync(page.Id);
+            var pageDB = await GetPageAsync(page.Id);
+
+            if (pageDB == null) throw new Exception("Ocorreu um erro ao atualizar a página!");
 
             pageDB.Name = page.Name;
             pageDB.Description = page.Description;
@@ -54,7 +56,7 @@ namespace LinkHub.Repositories
 
         public async Task<bool> Delete(int id)
         {
-            Page pageDB = await GetPageAsync(id);
+            var pageDB = await GetPageAsync(id);
 
             if (pageDB == null) throw new Exception("Ocorreu um erro ao remover a página!");
 

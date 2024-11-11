@@ -13,9 +13,11 @@ namespace LinkHub.Services
             _settingsRepository = settingsRepository;
         }
 
-        public bool IsAuthenticated(string username, string password)
+        public async Task<bool> IsAuthenticated(string username, string password)
         {
-            var ldapSettings = _settingsRepository.GetLdapSettings();
+            var ldapSettings = await _settingsRepository.GetLdapSettings();
+
+            if (ldapSettings == null) return false;
 
             try
             {

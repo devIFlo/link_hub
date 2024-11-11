@@ -1,6 +1,5 @@
 ﻿using LinkHub.Data;
 using LinkHub.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -18,12 +17,12 @@ namespace LinkHub.Repositories
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<Category> GetCategoryAsync(int id)
+        public async Task<Category?> GetCategoryAsync(int id)
         {
             return await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<List<Category>> GetCategories()
+        public async Task<List<Category>> GetCategoriesAsync()
         {
             return await _context.Categories.Include(c => c.Page).ToListAsync();
         }
@@ -50,7 +49,7 @@ namespace LinkHub.Repositories
         {
             return await _context.Categories
                 .Include(c => c.Page)
-                .Where(c => c.Page.Name == pageName)
+                .Where(c => c.Page != null && c.Page.Name == pageName)
                 .OrderBy(c => c.Name)
                 .ToListAsync();
         }
@@ -67,6 +66,8 @@ namespace LinkHub.Repositories
         {
             var categoryDB = await GetCategoryAsync(category.Id);
 
+            if (categoryDB == null) throw new InvalidOperationException("A categoria não foi encontrada.");
+
             categoryDB.Name = category.Name;
 
             _context.Categories.Update(categoryDB);
@@ -79,8 +80,7 @@ namespace LinkHub.Repositories
         {
             var category = await GetCategoryAsync(id);
 
-            if (category == null) 
-                throw new InvalidOperationException("A categoria não foi encontrada.");
+            if (category == null) throw new InvalidOperationException("A categoria não foi encontrada.");
 
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
@@ -89,7 +89,6 @@ namespace LinkHub.Repositories
 
             Log.Information("O usuário {UserName} apagou a categoria '{CategoryName}' (ID: {CategoryId}) em {Timestamp}",
                 userName, category.Name, category.Id, DateTime.UtcNow);
-
 
             return true;
         }

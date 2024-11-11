@@ -12,7 +12,7 @@ namespace LinkHub.ViewModels
 
         [Display(Name = "Grupo")]
         [Required]
-        public required string SelectedRole { get; set; }
+        public string? SelectedRole { get; set; }
 
         public IEnumerable<IdentityRole>? Roles { get; set; }
     }

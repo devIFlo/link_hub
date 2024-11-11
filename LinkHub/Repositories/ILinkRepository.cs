@@ -5,7 +5,7 @@ namespace LinkHub.Repositories
     public interface ILinkRepository
     {
         Task<List<Link>> GetLinksAsync();
-        Task<Link> GetLinkAsync(int id);
+        Task<Link?> GetLinkAsync(int id);
         Task<List<Link>> GetLinksPerPageAsync(string page);
         Task<List<Link>> GetLinksPerUserAsync(string userId);
         List<Category> GetCategories();

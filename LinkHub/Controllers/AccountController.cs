@@ -3,6 +3,7 @@ using LinkHub.Services;
 using LinkHub.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LinkHub.Controllers
 {
@@ -46,14 +47,52 @@ namespace LinkHub.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (model.Username == "admin") {
-					var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
+                var username = model.Username;
+                var password = model.Password;
+                var rememberMe = model.RememberMe;
 
-                    if (result.Succeeded)
+                if (username != null && password != null)
+                {
+                    if (username == "admin") {
+					    var result = await _signInManager.PasswordSignInAsync(username, password, rememberMe, false);
+
+                        if (result.Succeeded)
+                        {
+                            if (rememberMe)
+                            {
+                                Response.Cookies.Append("RememberedUsername", username, new CookieOptions
+                                {
+                                    Expires = DateTime.UtcNow.AddDays(30),
+                                    HttpOnly = true,
+                                    SameSite = SameSiteMode.Lax
+                                });
+                            }
+                            else
+                            {
+                                Response.Cookies.Delete("RememberedUsername");
+                            }
+
+                            return RedirectToAction("Index", "Home");
+					    }
+
+                        ModelState.AddModelError(string.Empty, "Usuário ou senha incorreto.");
+					    return View(model);
+				    }
+
+                    if (await _ldapService.IsAuthenticated(username, password))
                     {
+                        var user = await _userManager.FindByNameAsync(username);
+                        if (user == null)
+                        {
+                            ModelState.AddModelError(string.Empty, "Usuário não tem permissão para acessar o sistema.");
+                            return View(model);
+                        }
+
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+
                         if (model.RememberMe)
                         {
-                            Response.Cookies.Append("RememberedUsername", model.Username, new CookieOptions
+                            Response.Cookies.Append("RememberedUsername", username, new CookieOptions
                             {
                                 Expires = DateTime.UtcNow.AddDays(30),
                                 HttpOnly = true,
@@ -66,38 +105,7 @@ namespace LinkHub.Controllers
                         }
 
                         return RedirectToAction("Index", "Home");
-					}
-
-                    ModelState.AddModelError(string.Empty, "Usuário ou senha incorreto.");
-					return View(model);
-				}
-
-                if (_ldapService.IsAuthenticated(model.Username, model.Password))
-                {
-                    var user = await _userManager.FindByNameAsync(model.Username);
-                    if (user == null)
-                    {
-                        ModelState.AddModelError(string.Empty, "Usuário não tem permissão para acessar o sistema.");
-                        return View(model);
                     }
-
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-
-                    if (model.RememberMe)
-                    {
-                        Response.Cookies.Append("RememberedUsername", model.Username, new CookieOptions
-                        {
-                            Expires = DateTime.UtcNow.AddDays(30),
-                            HttpOnly = true,
-                            SameSite = SameSiteMode.Lax
-                        });
-                    }
-                    else
-                    {
-                        Response.Cookies.Delete("RememberedUsername");
-                    }
-
-                    return RedirectToAction("Index", "Home");
                 }
 
                 ModelState.AddModelError(string.Empty, "Usuário ou senha incorreto.");
