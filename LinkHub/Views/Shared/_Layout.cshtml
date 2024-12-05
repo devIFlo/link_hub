@@ -36,7 +36,9 @@
                         <li class="navbar-text text-white">
                              @if (User.Identity != null && User.Identity.IsAuthenticated)
                             {
-                                <span>@User.Identity.Name</span>
+                                <a class="text-white" asp-area="" asp-controller="Users" asp-action="Profile">
+                                    <span>@User.Identity.Name</span>
+                                </a>
                             }
                         </li>
                         <li class="nav-item text-white">

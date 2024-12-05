@@ -42,7 +42,13 @@ namespace LinkHub.Controllers
 			return View(users);
 		}
 
-		[HttpPost]
+        public async Task<IActionResult> Profile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            return View(user);
+        }
+
+        [HttpPost]
 		public async Task<IActionResult> SyncLdapUsers()
 		{
 			try

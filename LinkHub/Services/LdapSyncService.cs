@@ -43,7 +43,8 @@ namespace LinkHub.Services
 						UserName = ldapUser.UserName,
 						Email = ldapUser.Email,
 						FirstName = ldapUser.FirstName,
-						LastName = ldapUser.LastName
+						LastName = ldapUser.LastName,
+						UserType = "LDAP"
 					};
 
 					var result = await _userManager.CreateAsync(newUser);
@@ -75,8 +76,13 @@ namespace LinkHub.Services
 						identityUser.LastName = ldapUser.LastName;
 						isUpdated = true;
 					}
+					if (identityUser.UserType != "LDAP")
+					{
+						identityUser.UserType = "LDAP";
+						isUpdated = true;
+					}
 
-					if (isUpdated)
+                    if (isUpdated)
 					{
 						var result = await _userManager.UpdateAsync(identityUser);
 						if (!result.Succeeded)

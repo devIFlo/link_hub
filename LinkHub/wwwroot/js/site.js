@@ -307,3 +307,24 @@ $('.btn-user-delete').click(function () {
         }
     });
 });
+
+/* Modal da view Profile */
+$('.btn-user-password').click(function () {
+    var userId = $(this).attr('user-id');
+
+    $.ajax({
+        type: 'GET',
+        url: '/Users/Password/' + userId,
+        success: function (result) {
+            if (result.message) {
+                _notyf.error(result.message);
+            } else {
+                $("#userPassword").html(result);
+                $('#modalUserPassword').modal('show');
+            }
+        },
+        error: function (xhr, status, error) {
+            _notyf.error('Ocorreu um erro ao tentar abrir a janela de edição.');
+        }
+    });
+});

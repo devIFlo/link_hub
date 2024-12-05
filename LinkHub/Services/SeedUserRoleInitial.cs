@@ -56,6 +56,7 @@ namespace LinkHub.Services
 				user.NormalizedUserName = "ADMIN";
 				user.FirstName = "Administrador";
 				user.Email = "admin@admin.com";
+				user.UserType = "LOCAL";
                 user.LockoutEnabled = false;
 				user.SecurityStamp = Guid.NewGuid().ToString();
 

@@ -1,0 +1,45 @@
+﻿@model ApplicationUser
+
+@{
+    ViewData["Title"] = "Perfil do Usuário";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">@ViewData["Title"]</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <strong>@Html.DisplayNameFor(model => model.UserName):</strong> @Model.UserName
+                </li>
+                <li class="list-group-item">
+                    <strong>@Html.DisplayNameFor(model => model.FirstName):</strong> @Model.FirstName
+                </li>
+                <li class="list-group-item">
+                    <strong>@Html.DisplayNameFor(model => model.Email):</strong> @Model.Email
+                </li>
+                <li class="list-group-item">
+                    <strong>@Html.DisplayNameFor(model => model.UserType):</strong> @Model.UserType
+                </li>
+                @if(Model.UserType == "LOCAL")
+                {
+                    <li class="list-group-item">
+                        <a href="javascript:" user-id="@Model.Id" class="btn btn-warning btn-user-password">
+                            <i class="fa-solid fa-user-lock"></i>
+                            <span class="d-none d-sm-inline">Alterar Senha</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+@* Modal User Password *@
+<div class="modal fade" id="modalUserPassword" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div id="userPassword"></div>
+        </div>
+    </div>
+</div>
