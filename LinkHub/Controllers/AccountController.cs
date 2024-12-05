@@ -3,7 +3,7 @@ using LinkHub.Services;
 using LinkHub.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Serilog;
 
 namespace LinkHub.Controllers
 {
@@ -72,11 +72,18 @@ namespace LinkHub.Controllers
                                 Response.Cookies.Delete("RememberedUsername");
                             }
 
+                            Log.Information("O usuário {User} realizou o login no sistema em {Timestamp}",
+                                username, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+
                             return RedirectToAction("Index", "Home");
 					    }
 
                         ModelState.AddModelError(string.Empty, "Usuário ou senha incorreto.");
-					    return View(model);
+
+                        Log.Warning("Tentativa de login mal sucedida com o usuário {User} em {Timestamp}",
+                                username, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+
+                        return View(model);
 				    }
 
                     if (await _ldapService.IsAuthenticated(username, password))
@@ -104,11 +111,17 @@ namespace LinkHub.Controllers
                             Response.Cookies.Delete("RememberedUsername");
                         }
 
+                        Log.Information("O usuário {User} realizou o login no sistema em {Timestamp}",
+                                username, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+
                         return RedirectToAction("Index", "Home");
                     }
                 }
 
                 ModelState.AddModelError(string.Empty, "Usuário ou senha incorreto.");
+
+                Log.Warning("Tentativa de login mal sucedida com o usuário {User} em {Timestamp}",
+                                username, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
             }
 
             return View(model);

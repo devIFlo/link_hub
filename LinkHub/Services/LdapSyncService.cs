@@ -4,26 +4,27 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using System.DirectoryServices.Protocols;
 using System.Net;
+using Serilog;
 
 namespace LinkHub.Services
 {
     public class LdapSyncService
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
-		private readonly ILogger<LdapSyncService> _logger;
 		private readonly ILdapSettingsRepository _ldapSettingsRepository;
         private readonly IDataProtector _protector;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public LdapSyncService(
 			UserManager<ApplicationUser> userManager,
-			ILogger<LdapSyncService> logger,
 			ILdapSettingsRepository ldapSettingsRepository,
-            IDataProtectionProvider dataProtectionProvider)
+            IDataProtectionProvider dataProtectionProvider,
+            IHttpContextAccessor httpContextAccessor)
 		{
 			_userManager = userManager;
-			_logger = logger;
 			_ldapSettingsRepository = ldapSettingsRepository;
             _protector = dataProtectionProvider.CreateProtector("LdapSettingsPasswordProtector");
+            _httpContextAccessor = httpContextAccessor;
         }
 			
         public async Task SyncUsersAsync()
@@ -49,10 +50,11 @@ namespace LinkHub.Services
 					if (result.Succeeded)
 					{
 						await _userManager.AddToRoleAsync(newUser, "VIEWER");
-					}
+                    }
 					else
 					{
-						_logger.LogError("Falha ao criar o usuário {UserName}: {Errors}", ldapUser.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
+						Log.Error("{Timestamp} - Falha ao criar o usuário {UserName}: {Errors}", 
+							DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"), ldapUser.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
 					}   					
 				}
 				else
@@ -79,8 +81,9 @@ namespace LinkHub.Services
 						var result = await _userManager.UpdateAsync(identityUser);
 						if (!result.Succeeded)
 						{
-							_logger.LogError("Falha ao atualizar o usuário {UserName}: {Errors}", ldapUser.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
-						}
+                            Log.Error("{Timestamp} - Falha ao atualizar o usuário {UserName}: {Errors}",
+								DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"), ldapUser.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
+                        }
 					}
 				}
 			}

@@ -1,10 +1,12 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using AutoMapper;
 using LinkHub.Models;
 using LinkHub.Repositories;
 using LinkHub.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace LinkHub.Controllers
 {
@@ -15,16 +17,19 @@ namespace LinkHub.Controllers
         private readonly IPageRepository _pageRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly INotyfService _notyfService;
+        private readonly IMapper _mapper;
 
         public CategoriesController(ICategoryRepository categoryRepository,
             IPageRepository pageRepository,
             UserManager<ApplicationUser> userManager,
-            INotyfService notyfService)
+            INotyfService notyfService,
+            IMapper mapper)
         {
             _categoryRepository = categoryRepository;
             _pageRepository = pageRepository;
             _userManager = userManager;
             _notyfService = notyfService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -126,7 +131,7 @@ namespace LinkHub.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Category category)
+        public async Task<IActionResult> Edit(CategoryViewModel categoryViewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -136,6 +141,8 @@ namespace LinkHub.Controllers
 
             try
             {
+                var category = _mapper.Map<Category>(categoryViewModel);
+
                 await _categoryRepository.UpdateAsync(category);
                 _notyfService.Success("Categoria atualizada com sucesso.");
             }
@@ -172,6 +179,7 @@ namespace LinkHub.Controllers
             catch (Exception ex) 
             {
                 _notyfService.Error("Ocorreu um erro ao remover a categoria: " + ex.Message);
+                Log.Error(ex, "Erro ao tentar remover a categoria com id {CategoryId}", id);
             }
 
             return RedirectToAction("Index");

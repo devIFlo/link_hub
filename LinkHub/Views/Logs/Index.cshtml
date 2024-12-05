@@ -1,5 +1,4 @@
-﻿@model List<LogEntry>
-
+﻿@model LogViewModel
 @{
     ViewData["Title"] = "Logs do Sistema";
 }
@@ -8,32 +7,87 @@
     <h2>@ViewData["Title"]</h2>
 </div>
 
+<form method="get" class="mb-4">
+    <div class="row">
+        <div class="col-md-3">
+            <label for="startDate">Data Inicial</label>
+            <input type="date" id="startDate" name="startDate" class="form-control" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-3">
+            <label for="endDate">Data Final</label>
+            <input type="date" id="endDate" name="endDate" class="form-control" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-3">
+            <label for="logLevel">Nível</label>
+            <select asp-for="LogLevel" class="form-control">
+                <option value="0">All</option>
+                <option value="2">Information</option>
+                <option value="3">Warning</option>
+                <option value="4">Error</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </div>
+</form>
+
 <div class="table-responsive">
     <table id="data-table" class="table table-striped table-bordered">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Data e Hora</th>
-                <th>Usuário</th>
                 <th>Nível</th>
                 <th>Mensagem</th>
                 <th>Exceção</th>
-                <th>Propriedades</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var log in Model)
+            @foreach (var log in Model.LogEntries)
             {
                 <tr>
-                    <td>@log.Id</td>
                     <td>@log.Timestamp?.ToString("g")</td>
-                    <td>@log.UserName</td>
-                    <td>@log.Level</td>
+                    
+                    @if (log.Level == 2) {
+                        <td>
+                            <span class="badge bg-info text-dark">Information</span>
+                        </td>
+                    }
+                    else if (log.Level == 3)
+                    {
+                        <td>
+                            <span class="badge bg-warning text-dark">Warning</span>
+                        </td>
+                    }
+                    else if (log.Level == 4) 
+                    {
+                        <td>
+                            <span class="badge bg-danger">Error</span>
+                        </td>
+                    } else {
+                        <td>
+                            <span class="badge bg-secondary">Unknown</span>
+                        </td>
+                    }
+                   
                     <td>@log.Message</td>
-                    <td>@log.Exception</td>
-                    <td>@log.Properties</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(log.Exception))
+                        {
+                            <span data-bs-toggle="tooltip" title="@log.Exception">@log.Exception.Substring(0, 50)...</span>
+                        }
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+
+@section Scripts {
+    <script>
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    </script>
+}

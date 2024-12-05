@@ -1,19 +1,19 @@
 ﻿using LinkHub.Data;
 using LinkHub.Models;
-using LinkHub.Services;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace LinkHub.Repositories
 {
     public class LinkRepository : ILinkRepository
     {
         private readonly ApplicationDbContext _context;
-        private readonly ImageStorage _imageStorage;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public LinkRepository(ApplicationDbContext context, ImageStorage imageStorage)
+        public LinkRepository(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
-            _imageStorage = imageStorage;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<Link?> GetLinkAsync(int id)
@@ -54,6 +54,11 @@ namespace LinkHub.Repositories
             _context.Links.Add(link);
             await _context.SaveChangesAsync();
 
+            var currentUser = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+
+            Log.Information("O usuário {CurrentUser} adicionou o link {LinkName} (ID: {LinkId}) em {Timestamp}",
+                    currentUser, link.Name, link.Id, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+
             return link;
         }
 
@@ -72,6 +77,11 @@ namespace LinkHub.Repositories
             _context.Links.Update(linkDB);
             await _context.SaveChangesAsync();
 
+            var currentUser = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+
+            Log.Information("O usuário {CurrentUser} atualizou o link (ID: {LinkId}) em {Timestamp}",
+                    currentUser, link.Id, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+
             return linkDB;
         }
 
@@ -79,6 +89,11 @@ namespace LinkHub.Repositories
         {
             _context.Links.Remove(link);
             await _context.SaveChangesAsync();
+
+            var currentUser = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+
+            Log.Information("O usuário {CurrentUser} deletou o link {LinkName} (ID: {LinkId}) em {Timestamp}",
+                    currentUser, link.Name, link.Id, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
 
             return true;
         }

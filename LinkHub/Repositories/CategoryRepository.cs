@@ -59,6 +59,11 @@ namespace LinkHub.Repositories
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 
+            var currentUser = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+
+            Log.Information("O usuário {CurrentUser} adicionou a categoria {CategoryName} (ID: {CategoryId}) em {Timestamp}",
+                    currentUser, category.Name, category.Id, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+
             return category;
         }
 
@@ -67,12 +72,18 @@ namespace LinkHub.Repositories
             var categoryDB = await GetCategoryAsync(category.Id);
 
             if (categoryDB == null) throw new InvalidOperationException("A categoria não foi encontrada.");
-
+                        
             categoryDB.Name = category.Name;
+            categoryDB.PageId = category.PageId;
 
             _context.Categories.Update(categoryDB);
             await _context.SaveChangesAsync();
 
+            var currentUser = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+                        
+            Log.Information("O usuário {CurrentUser} alterou a categoria (ID: {CategoryId}) em {Timestamp}",
+                    currentUser, category.Id, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+            
             return categoryDB;
         }
 
@@ -85,10 +96,10 @@ namespace LinkHub.Repositories
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
 
-            var userName = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+            var currentUser = _httpContextAccessor.HttpContext?.User.Identity?.Name;
 
-            Log.Information("O usuário {UserName} apagou a categoria '{CategoryName}' (ID: {CategoryId}) em {Timestamp}",
-                userName, category.Name, category.Id, DateTime.UtcNow);
+            Log.Information("O usuário {CurrentUser} deletou a categoria {CategoryName} (ID: {CategoryId}) em {Timestamp}",
+                    currentUser, category.Name, category.Id, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
 
             return true;
         }

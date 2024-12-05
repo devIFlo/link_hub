@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AspNetCoreHero.ToastNotification.Abstractions;
 using System.DirectoryServices.Protocols;
+using Serilog;
 
 
 namespace LinkHub.Controllers
@@ -47,8 +48,14 @@ namespace LinkHub.Controllers
 			try
 			{
 				await _ldapSyncService.SyncUsersAsync();
+
                 _notyfService.Success("Usuários sincronizados com sucesso!");
-			}
+
+                var currentUser = HttpContext?.User.Identity?.Name;
+
+                Log.Information("O usuário {CurrentUser} sincronizou os usuários do LDAP em {Timestamp}",
+                    currentUser, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+            }
 			catch (InvalidOperationException ex)
 			{
                 _notyfService.Warning(ex.Message);
@@ -163,7 +170,12 @@ namespace LinkHub.Controllers
 
                     _notyfService.Success("Grupo alterado com sucesso!");
 
-					return RedirectToAction("Index");
+                    var currentUser = HttpContext?.User.Identity?.Name;
+
+                    Log.Information("O usuário {CurrentUser} alterou o grupo do usuário {User} em {Timestamp}",
+                        currentUser, user.UserName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+
+                    return RedirectToAction("Index");
 				}
 			}
 
@@ -201,8 +213,12 @@ namespace LinkHub.Controllers
 				if (result.Succeeded)
 				{
                     _notyfService.Success($"Usuário {user.UserName} excluído com sucesso.");
-					
-				}
+
+					var currentUser = HttpContext?.User.Identity?.Name;
+
+                    Log.Information("O usuário {CurrentUser} deletou o usuário {UserName} (ID: {UserId}) em {Timestamp}",
+                        currentUser, user.UserName, user.Id, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+                }
 
 				foreach (var error in result.Errors)
 				{

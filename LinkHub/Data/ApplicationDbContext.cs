@@ -56,7 +56,6 @@ namespace LinkHub.Data
 				entity.Property(e => e.Timestamp).HasColumnType("TIMESTAMP").IsRequired(false);
 				entity.Property(e => e.Exception).HasColumnType("TEXT").IsRequired(false);
 				entity.Property(e => e.Properties).HasColumnType("JSONB").IsRequired(false);
-				entity.Property(e => e.UserName).HasColumnType("TEXT").IsRequired(false);
 			});
 		}
 	}

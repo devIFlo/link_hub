@@ -23,7 +23,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 Serilog.Debugging.SelfLog.Enable(msg => Console.WriteLine(msg));
 
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
     .WriteTo.PostgreSQL(
         connectionString: connectionString,
         tableName: "\"Logs\"",
@@ -33,8 +32,7 @@ Log.Logger = new LoggerConfiguration()
             { "\"Level\"", new LevelColumnWriter() },
             { "\"Timestamp\"", new TimestampColumnWriter() },
             { "\"Exception\"", new ExceptionColumnWriter() },
-            { "\"Properties\"", new PropertiesColumnWriter() },
-            { "\"UserName\"", new SinglePropertyColumnWriter("UserName") }
+            { "\"Properties\"", new PropertiesColumnWriter() }
         })
     .Enrich.FromLogContext()
     .CreateLogger();
@@ -63,6 +61,7 @@ builder.Services.AddNotyf(config =>
 builder.Services.AddScoped<LdapAuthentication>();
 builder.Services.AddScoped<LdapSyncService>();
 builder.Services.AddScoped<ImageStorage>();
+builder.Services.AddScoped<LogService>();
 builder.Services.AddScoped<ILinkRepository, LinkRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IPageRepository, PageRepository>();

@@ -2,6 +2,7 @@
 using LinkHub.Models;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace LinkHub.Repositories
 {
@@ -10,12 +11,14 @@ namespace LinkHub.Repositories
         private readonly ApplicationDbContext _context;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IDataProtector _protector;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public LdapSettingsRepository(ApplicationDbContext context, IDataProtectionProvider dataProtectionProvider)
+        public LdapSettingsRepository(ApplicationDbContext context, IDataProtectionProvider dataProtectionProvider, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _dataProtectionProvider = dataProtectionProvider;
             _protector = _dataProtectionProvider.CreateProtector("LdapSettingsPasswordProtector");
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<LdapSettings?> GetLdapSettings()
@@ -29,6 +32,11 @@ namespace LinkHub.Repositories
 
             _context.LdapSettings.Add(ldapSettings);
             await _context.SaveChangesAsync();
+
+            var currentUser = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+
+            Log.Information("O usuário {CurrentUser} adicionou as configurações do LDAP em {Timestamp}",
+                    currentUser, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
 
             return ldapSettings;
         }     
@@ -50,6 +58,11 @@ namespace LinkHub.Repositories
 
             _context.LdapSettings.Update(ldapSettingsDB);
             await _context.SaveChangesAsync();
+
+            var currentUser = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+
+            Log.Information("O usuário {CurrentUser} alterou as configurações do LDAP em {Timestamp}",
+                    currentUser, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
 
             return ldapSettingsDB;
         }

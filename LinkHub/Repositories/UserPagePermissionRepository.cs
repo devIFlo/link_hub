@@ -2,16 +2,19 @@
 using LinkHub.Models;
 using LinkHub.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace LinkHub.Repositories
 {
     public class UserPagePermissionRepository : IUserPagePermissionRepository
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserPagePermissionRepository(ApplicationDbContext context)
+        public UserPagePermissionRepository(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<List<UserPagePermission>> GetPermissionPerPageAsync(int pageId)
@@ -59,6 +62,11 @@ namespace LinkHub.Repositories
 
             await _context.SaveChangesAsync();
 
+            var currentUser = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+
+            Log.Information("O usuário {CurrentUser} alterou as permissões da página (ID: {PageId}) em {Timestamp}",
+                    currentUser, pageId, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+
             return true;
         }
 
@@ -69,6 +77,11 @@ namespace LinkHub.Repositories
 
             _context.UserPagePermissions.RemoveRange(existingPermission);
             await _context.SaveChangesAsync();
+
+            var currentUser = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+
+            Log.Information("O usuário {CurrentUser} deletou todas as permissões da página (ID: {PageId}) em {Timestamp}",
+                    currentUser, pageId, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
 
             return true;
         }

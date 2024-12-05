@@ -7,7 +7,6 @@
         public int? Level { get; set; }
         public DateTime? Timestamp { get; set; }
         public string? Exception { get; set; }
-        public string? Properties { get; set; }
-        public string? UserName { get; set; }
+        public string? Properties { get; set; }        
     }
 }

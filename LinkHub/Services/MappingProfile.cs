@@ -13,6 +13,10 @@ namespace LinkHub.Services
 
             CreateMap<Link, LinkViewModel>()
                 .ForMember(dest => dest.Image, opt => opt.Ignore());
+
+            CreateMap<CategoryViewModel, Category>()
+                .ForMember(dest => dest.PageId, opt => opt.MapFrom(src => src.SelectedPageId))
+                .ForMember(dest => dest.Page, opt => opt.Ignore());
         }
     }
 }
