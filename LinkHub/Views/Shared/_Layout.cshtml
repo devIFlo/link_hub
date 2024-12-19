@@ -34,10 +34,13 @@
                     </ul>
                     <ul class="navbar-nav">
                         <li class="navbar-text text-white">
-                             @if (User.Identity != null && User.Identity.IsAuthenticated)
+                            @if (User.Identity != null && User.Identity.IsAuthenticated)
                             {
-                                <a class="text-white" asp-area="" asp-controller="Users" asp-action="Profile">
-                                    <span>@User.Identity.Name</span>
+                                <a class="text-white" asp-area="" asp-controller="Account" asp-action="Profile">
+                                    @if (Context.Items["FullName"] != null)
+                                    {
+                                        <span>@Context.Items["FullName"]</span>
+                                    }
                                 </a>
                             }
                         </li>

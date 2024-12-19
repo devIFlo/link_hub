@@ -314,7 +314,7 @@ $('.btn-user-password').click(function () {
 
     $.ajax({
         type: 'GET',
-        url: '/Users/Password/' + userId,
+        url: '/Account/ResetPassword/' + userId,
         success: function (result) {
             if (result.message) {
                 _notyf.error(result.message);

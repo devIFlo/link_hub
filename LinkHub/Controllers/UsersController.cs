@@ -36,17 +36,11 @@ namespace LinkHub.Controllers
             _notyfService = notyfService;
         }
 
-		public IActionResult Index()
+        public IActionResult Index()
 		{
             var users = _userManager.Users;
 			return View(users);
 		}
-
-        public async Task<IActionResult> Profile()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            return View(user);
-        }
 
         [HttpPost]
 		public async Task<IActionResult> SyncLdapUsers()
@@ -78,7 +72,7 @@ namespace LinkHub.Controllers
             return RedirectToAction("Index");
         }
 
-		[HttpGet]
+        [HttpGet]
 		public async Task<IActionResult> Settings()
 		{
 			var ldapSettings = await _ldapSettingsRepository.GetLdapSettings();
@@ -91,7 +85,7 @@ namespace LinkHub.Controllers
 			return PartialView("_Settings", ldapSettings);
 		}
 
-		[HttpPost]
+        [HttpPost]
 		public async Task<IActionResult> Settings(LdapSettings ldapSettings)
 		{
 			if (ModelState.IsValid)
@@ -116,7 +110,7 @@ namespace LinkHub.Controllers
             return RedirectToAction("Index");
         }
 
-		[HttpGet]
+        [HttpGet]
 		public async Task<IActionResult> Group(string id)
 		{
             var user = await _userManager.FindByIdAsync(id);
@@ -143,7 +137,7 @@ namespace LinkHub.Controllers
             return PartialView("_Group", rolesView);
 		}
 
-		[HttpPost]
+        [HttpPost]
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Group(RoleViewModel model)
 		{
@@ -190,7 +184,7 @@ namespace LinkHub.Controllers
             return RedirectToAction("Index");
         }
 
-		[HttpGet]
+        [HttpGet]
 		public async Task<IActionResult> Delete(string id)
         {
             var user = await _userManager.FindByIdAsync(id);

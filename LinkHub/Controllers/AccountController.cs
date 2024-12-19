@@ -1,6 +1,8 @@
-﻿using LinkHub.Models;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using LinkHub.Models;
 using LinkHub.Services;
 using LinkHub.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
@@ -12,15 +14,18 @@ namespace LinkHub.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly LdapAuthentication _ldapService;
+        private readonly INotyfService _notyfService;
 
         public AccountController(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
-            LdapAuthentication ldapService)
+            LdapAuthentication ldapService,
+            INotyfService notyfService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _ldapService = ldapService;
+            _notyfService = notyfService;
         }
 
         [HttpGet]
@@ -132,6 +137,77 @@ namespace LinkHub.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            return View(user);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(string id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null && (user.UserType != "LOCAL" || user.Id != id))
+            {
+                return Json(new { message = "Usuário incorreto!" });
+            }
+
+            var resetPasswordView = new ResetPasswordViewModel
+            {
+                UserId = id
+            };
+
+            return PartialView("_ResetPassword", resetPasswordView);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByIdAsync(model.UserId);
+                if (user == null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+                var passwordValid = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
+                if (passwordValid)
+                {
+                    if (model.NewPassword == model.ConfirmPassword)
+                    {
+                        var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+                        if (result.Succeeded)
+                        {
+                            await _signInManager.RefreshSignInAsync(user);
+                            _notyfService.Success("Senha alterada com sucesso.");                            
+                        }
+
+                        foreach (var error in result.Errors)
+                        {
+                            _notyfService.Error(error.Description);
+                        }
+                    } 
+                    else
+                    {
+                        _notyfService.Error("A nova senha e a confirmação da senha não coincidem.");
+                    }
+                } 
+                else
+                {
+                    _notyfService.Error("A senha atual está incorreta.");
+                }
+
+                return RedirectToAction("Profile");
+            }
+
+            _notyfService.Error("Usuário não encontrado.");
+
+            return RedirectToAction("Profile");
         }
     }
 }

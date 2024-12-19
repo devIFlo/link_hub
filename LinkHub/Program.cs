@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog.Sinks.PostgreSQL;
 using Serilog;
 using System.Runtime.InteropServices;
+using LinkHub.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,7 +75,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 		options.LoginPath = "/Account/Login";
 	});
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<SetUserFullNameFilter>();
+});
 
 builder.Services.AddScoped<ISeedUserRoleInitial, SeedUserRoleInitial>();
 
