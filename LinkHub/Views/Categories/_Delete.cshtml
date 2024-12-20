@@ -1,7 +1,7 @@
 ﻿@model Category
 
 <div class="modal-header">
-    <h5 class="modal-title">Confirma a remoção da página abaixo?</h5>
+    <h5 class="modal-title">Confirma a remoção da categoria abaixo?</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
@@ -10,6 +10,11 @@
             <div class="col-sm">
                 <h6>@Html.DisplayNameFor(model => model.Name)</h6>
                 <p>@Html.DisplayFor(model => model.Name)</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                <p class="text-danger"><strong>Atenção: </strong>ao remover esta categoria, estará removendo também todos os links relacionados a ela.</p>
             </div>
         </div>
     </div>

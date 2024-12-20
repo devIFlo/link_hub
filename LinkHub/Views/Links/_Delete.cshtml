@@ -8,12 +8,16 @@
     <div class="container">
         <div class="row">
             <div class="col-sm">
-                <h6>@Html.DisplayNameFor(model => model.Name)</h6>
-                <p>@Html.DisplayFor(model => model.Name)</p>
-                <h6>@Html.DisplayNameFor(model => model.Url)</h6>
-                <p>@Html.DisplayFor(model => model.Url)</p>
+                <strong>@Html.DisplayNameFor(model => model.Name)</strong>: @Html.DisplayFor(model => model.Name)
             </div>
-            <div class="col-sm col-md-auto">
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                <strong>@Html.DisplayNameFor(model => model.Url)</strong>: @Html.DisplayFor(model => model.Url)
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
                 <img src="/images/@Html.DisplayFor(model => model.FileName)" class="card-img-top" alt="...">
             </div>
         </div>
