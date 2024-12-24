@@ -44,6 +44,16 @@ namespace LinkHub.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<Link>> GetLinksForHomePageAsync(string page)
+        {
+            var links = await _context.HomePages
+                .Where(h => h.Page != null && h.Page.Name == page)
+                .Select(h => h.Link!)
+                .ToListAsync();
+
+            return links ?? new List<Link>();
+        }
+
         public List<Category> GetCategories()
         {
             return _context.Categories.ToList();

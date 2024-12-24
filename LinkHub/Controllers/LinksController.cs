@@ -16,6 +16,7 @@ namespace LinkHub.Controllers
         private readonly ILinkRepository _linkRepository;
         private readonly IPageRepository _pageRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IHomePageRepository _homePageRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly INotyfService _notyfService;
         private readonly ImageStorage _imageStorage;
@@ -24,6 +25,7 @@ namespace LinkHub.Controllers
         public LinksController(ILinkRepository linkRepository,
             ICategoryRepository categoryRepository,
             IPageRepository pageRepository,
+            IHomePageRepository homePageRepository,
             UserManager<ApplicationUser> userManager,
             INotyfService notyfService,
             ImageStorage imageStorage,
@@ -31,7 +33,8 @@ namespace LinkHub.Controllers
         {
             _linkRepository = linkRepository;
             _categoryRepository = categoryRepository;
-            _pageRepository = pageRepository;            
+            _pageRepository = pageRepository;
+            _homePageRepository = homePageRepository;
             _userManager = userManager;
             _notyfService = notyfService;
             _imageStorage = imageStorage;
@@ -109,6 +112,60 @@ namespace LinkHub.Controllers
             catch (Exception ex)
             {
                 _notyfService.Error("Ocorreu um erro ao adicionar o link: " + ex.Message);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> Home(int id)
+        {
+            var link = await _linkRepository.GetLinkAsync(id);
+            if (link == null)
+            {
+                return Json(new { message = "Página não encontrada!" });
+            }
+
+            var selectedPageIds = await _homePageRepository.GetPagesPerLinkAsync(id);
+
+            var pages = _pageRepository.GetPages();
+
+            var linkHomeView = new LinkHomeViewModel
+            {
+                LinkId = id,
+                LinkName = link.Name,
+                Pages = pages,
+                SelectedPageIds = selectedPageIds
+            };
+
+            return PartialView("_Home", linkHomeView);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Home(LinkHomeViewModel linkHome)
+        {
+            try
+            {
+                var linkId = linkHome.LinkId;
+                var pageIds = linkHome.SelectedPageIds;
+
+                if (pageIds != null)
+                {
+                    await _homePageRepository.Update(linkId, pageIds);
+                }
+                else
+                {
+                    await _homePageRepository.DeleteAllHomePage(linkId);
+                }
+
+                _notyfService.Success("Home Page atualizada com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                _notyfService.Error("Não foi possivel atualizar a Home Page: " + ex.Message);
             }
 
             return RedirectToAction("Index");

@@ -42,11 +42,25 @@
                     </td>
                     <td class="text-center">
                         <div class="btn-group" role="group">
-                            <a href="javascript:" link-id="@link.Id" class="btn btn-primary btn-link-edit">Editar</a>
-                            <a href="javascript:" link-id="@link.Id" class="btn btn-danger btn-link-remove">Remover</a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a href="javascript:" link-id="@link.Id" class="btn btn-warning btn-link-home">
+                                    <i class="fa-solid fa-home"></i>
+                                    <span class="d-none d-sm-inline">Home</span>
+                                </a>
+
+                            }
+                            <a href="javascript:" link-id="@link.Id" class="btn btn-primary btn-link-edit">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                                <span class="d-none d-sm-inline">Editar</span>
+                            </a>
+                            <a href="javascript:" link-id="@link.Id" class="btn btn-danger btn-link-remove">
+                                <i class="fa-regular fa-trash-can"></i>
+                                <span class="d-none d-sm-inline">Remover</span>
+                            </a>
                         </div>
                     </td>
-                </tr>  
+                </tr>
             }
         </tbody>
     </table>
@@ -75,6 +89,15 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div id="linkDelete"></div>
+        </div>
+    </div>
+</div>
+
+@* Modal Link HomeView *@
+<div class="modal fade" id="modalLinkHome" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div id="linkHome"></div>
         </div>
     </div>
 </div>

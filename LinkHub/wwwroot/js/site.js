@@ -14,14 +14,20 @@ $(document).ready(function () {
         }
     });
 
-    $('#modalPagePermission').on('show.bs.modal', function (event) {
-        $('#multiple-select-field').select2({
-            dropdownParent: $('#modalPagePermission'),
-            theme: "bootstrap-5",
-            width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
-            placeholder: $(this).data('placeholder')
+    //Prepara a modal para utilizar o select2
+    function initModalSelect(modalId) {
+        $(modalId).on('show.bs.modal', function (event) {
+            $('#multiple-select-field').select2({
+                dropdownParent: $(modalId),
+                theme: "bootstrap-5",
+                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+                placeholder: $(this).data('placeholder')
+            });
         });
-    });
+    }
+
+    initModalSelect('#modalPagePermission');
+    initModalSelect('#modalLinkHome');
 });
 
 function previewImage(event) {
@@ -65,266 +71,54 @@ function filterCategories() {
 }
 
 
-/* Modal da view Links */
-$('.btn-link-add').click(function () {
+// Funções para abertura das modais
+function ajaxRequestModal(url, modal, content) {
     $.ajax({
         type: 'GET',
-        url: '/Links/Create/',
-        success: function (result) {
-            $("#linkCreate").html(result);
-            $('#modalLinkCreate').modal('show');
-        },
-        error: function (xhr, status, error) {
-            _notyf.error('Ocorreu um erro ao tentar abrir a janela de edição.');
-        }
-    });
-});
-
-$('.btn-link-edit').click(function () {
-    var linkId = $(this).attr('link-id');
-
-    $.ajax({
-        type: 'GET',
-        url: '/Links/Edit/' + linkId,
+        url: url,
         success: function (result) {
             if (result.message) {
                 _notyf.error(result.message);
             } else {
-                $("#linkEdit").html(result);
-                $('#modalLinkEdit').modal('show');
+                $("#" + content).html(result);
+                $('#' + modal).modal('show');
             }
         },
-        error: function (xhr, status, error) {
-            _notyf.error('Ocorreu um erro ao tentar abrir a janela de edição.');
+        error: function () {
+            _notyf.error('Ocorreu um erro ao tentar processar a requisição.');
         }
     });
-});
+}
 
-$('.btn-link-remove').click(function () {
-    var linkId = $(this).attr('link-id');
-
-    $.ajax({
-        type: 'GET',
-        url: '/Links/Delete/' + linkId,
-        success: function (result) {
-            if (result.message) {
-                _notyf.error(result.message);
-            } else {
-                $("#linkDelete").html(result);
-                $('#modalLinkDelete').modal('show');
-            }
-        },
-        error: function (xhr, status, error) {
-            _notyf.error('Ocorreu um erro ao tentar abrir a janela de edição.');
-        }
+function setupModal(btn, controller, action, attrId, modal, content) {
+    $(btn).click(function () {
+        var id = $(this).attr(attrId);
+        var url = `/${controller}/${action}/${id}`;
+        ajaxRequestModal(url, modal, content);
     });
-});
+}
 
+// Modais da view Links
+setupModal('.btn-link-add', 'Links', 'Create', '', 'modalLinkCreate', 'linkCreate');
+setupModal('.btn-link-edit', 'Links', 'Edit', 'link-id', 'modalLinkEdit', 'linkEdit');
+setupModal('.btn-link-remove', 'Links', 'Delete', 'link-id', 'modalLinkDelete', 'linkDelete');
+setupModal('.btn-link-home', 'Links', 'Home', 'link-id', 'modalLinkHome', 'linkHome');
 
-/* Modal da view Categories */
-$('.btn-category-add').click(function () {
-    $.ajax({
-        type: 'GET',
-        url: '/Categories/Create/',
-        success: function (result) {
-            $("#categoryCreate").html(result);
-            $('#modalCategoryCreate').modal('show');
-        },
-        error: function (xhr, status, error) {
-            _notyf.error('Ocorreu um erro ao tentar abrir a janela de edição.');
-        }
-    });
-});
+// Modais da view Categories
+setupModal('.btn-category-add', 'Categories', 'Create', '', 'modalCategoryCreate', 'categoryCreate');
+setupModal('.btn-category-edit', 'Categories', 'Edit', 'category-id', 'modalCategoryEdit', 'categoryEdit');
+setupModal('.btn-category-remove', 'Categories', 'Delete', 'category-id', 'modalCategoryDelete', 'categoryDelete');
 
-$('.btn-category-edit').click(function () {
-    var categoryId = $(this).attr('category-id');
+// Modais da view Pages
+setupModal('.btn-page-add', 'Pages', 'Create', '', 'modalPageCreate', 'pageCreate');
+setupModal('.btn-page-edit', 'Pages', 'Edit', 'page-id', 'modalPageEdit', 'pageEdit');
+setupModal('.btn-page-remove', 'Pages', 'Delete', 'page-id', 'modalPageDelete', 'pageDelete');
+setupModal('.btn-page-permission', 'Pages', 'Permission', 'page-id', 'modalPagePermission', 'pagePermission');
 
-    $.ajax({
-        type: 'GET',
-        url: '/Categories/Edit/' + categoryId,
-        success: function (result) {
-            if (result.message) {
-                _notyf.error(result.message);
-            } else {
-                $("#categoryEdit").html(result);
-                $('#modalCategoryEdit').modal('show');
-            }
-        },
-        error: function (xhr, status, error) {
-            _notyf.error('Ocorreu um erro ao tentar abrir a janela de edição.');
-        }
-    });
-});
+// Modais da view Users
+setupModal('.btn-user-settings', 'Users', 'Settings', '', 'modalUserSettings', 'userSettings');
+setupModal('.btn-user-group', 'Users', 'Group', 'user-id', 'modalUserGroup', 'userGroup');
+setupModal('.btn-user-delete', 'Users', 'Delete', 'user-id', 'modalUserDelete', 'userDelete');
 
-$('.btn-category-remove').click(function () {
-    var categoryId = $(this).attr('category-id');
-
-    $.ajax({
-        type: 'GET',
-        url: '/Categories/Delete/' + categoryId,
-        success: function (result) {
-            if (result.message) {
-                _notyf.error(result.message);
-            } else {
-                $("#categoryDelete").html(result);
-                $('#modalCategoryDelete').modal('show');
-            }
-        },
-        error: function (xhr, status, error) {
-            _notyf.error('Ocorreu um erro ao tentar abrir a janela de edição.');
-        }
-    });
-});
-
-
-/* Modal da view Pages */
-$('.btn-page-add').click(function () {
-    $.ajax({
-        type: 'GET',
-        url: '/Pages/Create/',
-        success: function (result) {
-            $("#pageCreate").html(result);
-            $('#modalPageCreate').modal('show');
-        },
-        error: function (xhr, status, error) {
-            _notyf.error('Ocorreu um erro ao tentar abrir a janela de edição.');
-        }
-    });
-});
-
-$('.btn-page-permission').click(function () {
-    var pageId = $(this).attr('page-id');
-
-    $.ajax({
-        type: 'GET',
-        url: '/Pages/Permission/' + pageId,
-        success: function (result) {
-            if (result.message) {
-                _notyf.error(result.message);
-            } else {
-                $("#pagePermission").html(result);
-                $('#modalPagePermission').modal('show');
-            }
-        },
-        error: function (xhr, status, error) {
-            _notyf.error('Ocorreu um erro ao tentar abrir a janela de edição.');
-        }
-    });
-});
-
-$('.btn-page-edit').click(function () {
-    var pageId = $(this).attr('page-id');
-
-    $.ajax({
-        type: 'GET',
-        url: '/Pages/Edit/' + pageId,
-        success: function (result) {
-            if (result.message) {
-                _notyf.error(result.message);
-            } else {
-                $("#pageEdit").html(result);
-                $('#modalPageEdit').modal('show');
-            }
-        },
-        error: function (xhr, status, error) {
-            _notyf.error('Ocorreu um erro ao tentar abrir a janela de edição.');
-        }
-    });
-});
-
-$('.btn-page-remove').click(function () {
-    var pageId = $(this).attr('page-id');
-
-    $.ajax({
-        type: 'GET',
-        url: '/Pages/Delete/' + pageId,
-        success: function (result) {
-            if (result.message) {
-                _notyf.error(result.message);
-            } else {
-                $("#pageDelete").html(result);
-                $('#modalPageDelete').modal('show');
-            }
-        },
-        error: function (xhr, status, error) {
-            _notyf.error('Ocorreu um erro ao tentar abrir a janela de edição.');
-        }
-    });
-});
-
-
-/* Modal da view Users */
-$('.btn-user-settings').click(function () {
-    $.ajax({
-        type: 'GET',
-        url: '/Users/Settings/',
-        success: function (result) {
-            $("#userSettings").html(result);
-            $('#modalUserSettings').modal('show');
-        },
-        error: function (xhr, status, error) {
-            _notyf.error('Ocorreu um erro ao tentar abrir a janela de edição.');
-        }
-    });
-});
-
-$('.btn-user-group').click(function () {
-    var userId = $(this).attr('user-id');
-
-    $.ajax({
-        type: 'GET',
-        url: '/Users/Group/' + userId,
-        success: function (result) {
-            if (result.message) {
-                _notyf.error(result.message);
-            } else {
-                $("#userGroup").html(result);
-                $('#modalUserGroup').modal('show');
-            }
-        },
-        error: function (xhr, status, error) {
-            _notyf.error('Ocorreu um erro ao tentar abrir a janela de edição.');
-        }
-    });
-});
-
-$('.btn-user-delete').click(function () {
-    var userId = $(this).attr('user-id');
-
-    $.ajax({
-        type: 'GET',
-        url: '/Users/Delete/' + userId,
-        success: function (result) {
-            if (result.message) {
-                _notyf.error(result.message);
-            } else {
-                $("#userDelete").html(result);
-                $('#modalUserDelete').modal('show');
-            }
-        },
-        error: function (xhr, status, error) {
-            _notyf.error('Ocorreu um erro ao tentar abrir a janela de edição.');
-        }
-    });
-});
-
-/* Modal da view Profile */
-$('.btn-user-password').click(function () {
-    var userId = $(this).attr('user-id');
-
-    $.ajax({
-        type: 'GET',
-        url: '/Account/ResetPassword/' + userId,
-        success: function (result) {
-            if (result.message) {
-                _notyf.error(result.message);
-            } else {
-                $("#userPassword").html(result);
-                $('#modalUserPassword').modal('show');
-            }
-        },
-        error: function (xhr, status, error) {
-            _notyf.error('Ocorreu um erro ao tentar abrir a janela de edição.');
-        }
-    });
-});
+// Modais da view Profile
+setupModal('.btn-user-password', 'Account', 'ResetPassword', 'user-id', 'modalUserPassword', 'userPassword');

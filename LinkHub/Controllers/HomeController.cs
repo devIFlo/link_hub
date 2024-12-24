@@ -4,7 +4,6 @@ using LinkHub.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LinkHub.Controllers
 {
@@ -24,9 +23,17 @@ namespace LinkHub.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var pages = _pageRepository.GetPages();
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user?.Id;
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var pages = await _pageRepository.GetPagePerUserAsync(userId);
 
             return View(pages);
         }
@@ -37,11 +44,13 @@ namespace LinkHub.Controllers
         {
             var categories = await _categoryRepository.GetCategoriesPerPageAsync(page);
             var links = await _linkRepository.GetLinksPerPageAsync(page);
+            var homePageLinks = await _linkRepository.GetLinksForHomePageAsync(page);
 
             var homePageViewModel = new HomePageViewModel
             {
                 Categories = categories,
-                Links = links
+                Links = links,
+                HomePageLinks = homePageLinks
             };
 
             ViewData["Page"] = page;
