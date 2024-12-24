@@ -17,7 +17,7 @@
             {
                 @foreach (var tab in Model.Categories)
                 {
-                    <button class="nav-link" id="nav-@tab.Name-tab" data-bs-toggle="tab" data-bs-target="#nav-@tab.Name" type="button" role="tab" aria-controls="nav-@tab.Name" aria-selected="false">
+                    <button class="nav-link" id="nav-@tab.Name.Replace(" ", "")-tab" data-bs-toggle="tab" data-bs-target="#nav-@tab.Name.Replace(" ", "")" type="button" role="tab" aria-controls="nav-@tab.Name.Replace(" ", "")" aria-selected="false">
                         @tab.Name
                     </button>
                 }                
@@ -52,7 +52,7 @@
         {
             @foreach (var tab in Model.Categories)
             {
-                <div class="tab-pane fade" id="nav-@tab.Name" role="tabpanel" aria-labelledby="nav-@tab.Name-tab">
+                <div class="tab-pane fade" id="nav-@tab.Name.Replace(" ", "")" role="tabpanel" aria-labelledby="nav-@tab.Name.Replace(" ", "")-tab">
                     <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4">
                         @if (Model.Links != null) {
                             @foreach (var tabContent in Model.Links)

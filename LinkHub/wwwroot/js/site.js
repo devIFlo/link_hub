@@ -92,8 +92,13 @@ function ajaxRequestModal(url, modal, content) {
 
 function setupModal(btn, controller, action, attrId, modal, content) {
     $(btn).click(function () {
-        var id = $(this).attr(attrId);
-        var url = `/${controller}/${action}/${id}`;
+        if (attrId == '') {
+            var url = `/${controller}/${action}/`;
+        } else {
+            var id = $(this).attr(attrId);
+            var url = `/${controller}/${action}/${id}`;
+        }
+        
         ajaxRequestModal(url, modal, content);
     });
 }
