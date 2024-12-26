@@ -54,7 +54,7 @@ namespace LinkHub.Repositories
             }                     
 
             var homePagesToRemove = existingHomePages
-                .Where(x => x.PageId != null && !pagesIds.Contains(x.PageId))
+                .Where(x => !pagesIds.Contains(x.PageId))
                 .ToList();            
 
             _context.HomePages.RemoveRange(homePagesToRemove);
@@ -62,10 +62,10 @@ namespace LinkHub.Repositories
 
             await _context.SaveChangesAsync();
 
-            //var currentUser = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+            var currentUser = _httpContextAccessor.HttpContext?.User.Identity?.Name;
 
-            //Log.Information("O usuário {CurrentUser} alterou as permissões da página (ID: {PageId}) em {Timestamp}",
-            //        currentUser, pageId, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+            Log.Information("O usuário {CurrentUser} alterou as configurações de Home Page do Link (ID: {LinkId}) em {Timestamp}",
+                    currentUser, linkId, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
 
             return true;
         }
@@ -78,10 +78,10 @@ namespace LinkHub.Repositories
             _context.HomePages.RemoveRange(existingHomePage);
             await _context.SaveChangesAsync();
 
-            //var currentUser = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+            var currentUser = _httpContextAccessor.HttpContext?.User.Identity?.Name;
 
-            //Log.Information("O usuário {CurrentUser} deletou todas as permissões da página (ID: {PageId}) em {Timestamp}",
-            //        currentUser, pageId, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+            Log.Information("O usuário {CurrentUser} deletou todas as configurações de Home Page do Link d(ID: {LinkId}) em {Timestamp}",
+                    currentUser, linkId, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
 
             return true;
         }

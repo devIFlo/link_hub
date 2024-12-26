@@ -33,8 +33,8 @@ namespace LinkHub.Controllers
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-				return RedirectToAction("Index", "Home");
-			}
+                return RedirectToAction("Index", "Home");
+            }
 
             var model = new LoginViewModel();
 
@@ -47,7 +47,7 @@ namespace LinkHub.Controllers
             return View(model);
         }
 
-		[HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
@@ -58,8 +58,9 @@ namespace LinkHub.Controllers
 
                 if (username != null && password != null)
                 {
-                    if (username == "admin") {
-					    var result = await _signInManager.PasswordSignInAsync(username, password, rememberMe, false);
+                    if (username == "admin")
+                    {
+                        var result = await _signInManager.PasswordSignInAsync(username, password, rememberMe, false);
 
                         if (result.Succeeded)
                         {
@@ -81,7 +82,7 @@ namespace LinkHub.Controllers
                                 username, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
 
                             return RedirectToAction("Index", "Home");
-					    }
+                        }
 
                         ModelState.AddModelError(string.Empty, "Usuário ou senha incorreto.");
 
@@ -89,7 +90,7 @@ namespace LinkHub.Controllers
                                 username, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
 
                         return View(model);
-				    }
+                    }
 
                     if (await _ldapService.IsAuthenticated(username, password))
                     {
@@ -175,28 +176,37 @@ namespace LinkHub.Controllers
                     return RedirectToAction("Login", "Account");
                 }
 
-                var passwordValid = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
+                var currentPassword = model.CurrentPassword;
+                var newPassword = model.NewPassword;
+
+                if (currentPassword == null || newPassword == null)
+                {
+                    _notyfService.Error("Preencha todos os campos obrigarórios.");
+                    return RedirectToAction("Profile");
+                }
+
+                var passwordValid = await _userManager.CheckPasswordAsync(user, currentPassword);
                 if (passwordValid)
                 {
                     if (model.NewPassword == model.ConfirmPassword)
                     {
-                        var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+                        var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
                         if (result.Succeeded)
                         {
                             await _signInManager.RefreshSignInAsync(user);
-                            _notyfService.Success("Senha alterada com sucesso.");                            
+                            _notyfService.Success("Senha alterada com sucesso.");
                         }
 
                         foreach (var error in result.Errors)
                         {
                             _notyfService.Error(error.Description);
                         }
-                    } 
+                    }
                     else
                     {
                         _notyfService.Error("A nova senha e a confirmação da senha não coincidem.");
                     }
-                } 
+                }
                 else
                 {
                     _notyfService.Error("A senha atual está incorreta.");

@@ -8,10 +8,20 @@
 });
 
 $(document).ready(function () {
+    //Configurações do DataTable
+    $.fn.dataTable.moment('DD/MM/YYYY');
+
     $('#data-table').DataTable({
         language: {
             url: '/lib/DataTables/pt-BR.json'
         }
+    });
+
+    $('#data-table-logs').DataTable({
+        language: {
+            url: '/lib/DataTables/pt-BR.json'
+        },
+        order: [[0, 'desc']]
     });
 
     //Prepara a modal para utilizar o select2
@@ -30,6 +40,7 @@ $(document).ready(function () {
     initModalSelect('#modalLinkHome');
 });
 
+// Função para exibir um preview da imagem escolhida
 function previewImage(event) {
     var reader = new FileReader();
     reader.onload = function () {
@@ -108,6 +119,7 @@ setupModal('.btn-link-add', 'Links', 'Create', '', 'modalLinkCreate', 'linkCreat
 setupModal('.btn-link-edit', 'Links', 'Edit', 'link-id', 'modalLinkEdit', 'linkEdit');
 setupModal('.btn-link-remove', 'Links', 'Delete', 'link-id', 'modalLinkDelete', 'linkDelete');
 setupModal('.btn-link-home', 'Links', 'Home', 'link-id', 'modalLinkHome', 'linkHome');
+setupModal('.btn-link-details', 'Links', 'Details', 'link-id', 'modalLinkDetails', 'linkDetails');
 
 // Modais da view Categories
 setupModal('.btn-category-add', 'Categories', 'Create', '', 'modalCategoryCreate', 'categoryCreate');

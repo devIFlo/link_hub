@@ -20,6 +20,7 @@ namespace LinkHub.Repositories
         {
             return await _context.Links
                 .Include(l => l.Category)
+                .ThenInclude(c => c!.Page)
                 .FirstOrDefaultAsync(l => l.Id == id);
         }
 
@@ -38,7 +39,9 @@ namespace LinkHub.Repositories
 
         public async Task<List<Link>> GetLinksPerUserAsync(string userId)
         {
-            return await _context.Links                      
+            return await _context.Links
+                .Include(l => l.Category)
+                .ThenInclude(c => c!.Page)
                 .Where(c => _context.UserPagePermissions
                     .Any(upp => c.Category != null && upp.PageId == c.Category.PageId && upp.UserId == userId))
                 .ToListAsync();

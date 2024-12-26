@@ -54,7 +54,28 @@ namespace LinkHub.Controllers
             }
 
             List<Link> links = await _linkRepository.GetLinksPerUserAsync(userId);
+
             return View(links);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user?.Id;
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var link = await _linkRepository.GetLinkAsync(id);
+            if (link == null)
+            {
+                return Json(new { message = "Página não encontrada!" });
+            }
+
+            return PartialView("_Details", link);
         }
 
         [HttpGet]

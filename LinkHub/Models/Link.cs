@@ -17,6 +17,7 @@ namespace LinkHub.Models
         [Display(Name = "Link")]
         public required string Url { get; set; }
 
+        [Display(Name = "Categoria")]
         public Category? Category { get; set; }
 
         [Required(ErrorMessage = "A categoria é obrigatória.")]
