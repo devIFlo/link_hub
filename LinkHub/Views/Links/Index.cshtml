@@ -19,12 +19,6 @@
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
                 <th class="text-center">
-                    @Html.DisplayNameFor(model => model.Category!.Page)
-                </th>
-                <th class="text-center">
-                    @Html.DisplayNameFor(model => model.Category)
-                </th>
-                <th class="text-center">
                     @Html.DisplayNameFor(model => model.Url)
                 </th>
                 <th class="text-center">
@@ -38,18 +32,6 @@
                 <tr>
                     <td>
                         @Html.DisplayFor(modelItem => link.Name)
-                    </td>
-                    <td>
-                        @if (link.Category?.Page?.Name != null)
-                        {
-                            @Html.DisplayFor(modelItem => link.Category.Page.Name)
-                        }
-                    </td>
-                    <td>
-                        @if (link.Category?.Name != null)
-                        {
-                            @Html.DisplayFor(modelItem => link.Category.Name)
-                        }
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => link.Url)
