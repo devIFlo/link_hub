@@ -12,19 +12,17 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-success border-bottom box-shadow mb-3">
-            <div class="container-fluid">                
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li></li>
-                    </ul>
-                    <ul class="navbar-nav flex-grow-1">
-                        <li>
-                            <h3 class="text-white">
-                                LinkHub - @ViewData["Page"]
-                            </h3>
-                        </li>
-                    </ul>
+        <nav class="navbar navbar-expand-sm navbar-light bg-success border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <div class="d-flex w-100 justify-content-between align-items-center">
+                    <div class="mx-auto text-center">
+                        <h3 class="text-white">
+                            LinkHub - @ViewData["Page"]
+                        </h3>
+                    </div>
+                    <div>
+                        <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar..." onkeyup="filterLinks()" />
+                    </div>
                 </div>
             </div>
         </nav>
@@ -42,7 +40,7 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/links-filter.js" asp-append-version="true"></script>
     <script src="~/lib/DataTables/datatables.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
