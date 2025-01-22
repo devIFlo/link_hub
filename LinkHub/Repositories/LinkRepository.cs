@@ -32,7 +32,7 @@ namespace LinkHub.Repositories
         public async Task<List<Link>> GetLinksPerPageAsync(string page)
         {
             return await _context.Links
-                .Where(l => l.Category != null && l.Category.Page != null && l.Category.Page.Name == page)
+                .Where(l => l.Category != null && l.Category.Page != null && l.Category.Page.Name.ToLower() == page.ToLower())
                 .OrderBy(l => l.Name)
                 .ToListAsync();
         }
@@ -50,7 +50,7 @@ namespace LinkHub.Repositories
         public async Task<List<Link>> GetLinksForHomePageAsync(string page)
         {
             var links = await _context.HomePages
-                .Where(h => h.Page != null && h.Page.Name == page)
+                .Where(h => h.Page != null && h.Page.Name.ToLower() == page.ToLower())
                 .Select(h => h.Link!)
                 .ToListAsync();
 

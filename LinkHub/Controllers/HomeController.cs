@@ -53,7 +53,7 @@ namespace LinkHub.Controllers
                 HomePageLinks = homePageLinks
             };
 
-            ViewData["Page"] = page;
+            ViewData["Page"] = page.ToUpper();
 
             return View(homePageViewModel);
         }

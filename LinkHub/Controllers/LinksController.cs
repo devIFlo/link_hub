@@ -7,6 +7,7 @@ using LinkHub.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SixLabors.ImageSharp;
 
 namespace LinkHub.Controllers
 {
@@ -129,6 +130,10 @@ namespace LinkHub.Controllers
 
                 await _linkRepository.Add(link);
                 _notyfService.Success("Link adicionado com sucesso.");
+            }
+            catch (UnknownImageFormatException)
+            {
+                _notyfService.Error("Imagem não suportada! Adicione imagens do tipo JPEG, PNG, BMP ou Webp.");
             }
             catch (Exception ex)
             {
@@ -253,6 +258,10 @@ namespace LinkHub.Controllers
 
                 await _linkRepository.Update(link);
                 _notyfService.Success("Link atualizado com sucesso.");
+            }
+            catch (UnknownImageFormatException)
+            {
+                _notyfService.Error("Imagem não suportada! Adicione imagens do tipo JPEG, PNG, BMP ou Webp.");
             }
             catch (Exception ex) 
             {

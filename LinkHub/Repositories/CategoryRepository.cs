@@ -49,7 +49,7 @@ namespace LinkHub.Repositories
         {
             return await _context.Categories
                 .Include(c => c.Page)
-                .Where(c => c.Page != null && c.Page.Name == pageName)
+                .Where(c => c.Page != null && c.Page.Name.ToLower() == pageName.ToLower())
                 .OrderBy(c => c.Name.ToLower() == "home" ? 0 : 1)
                 .ThenBy(c => c.Name)
                 .ToListAsync();
