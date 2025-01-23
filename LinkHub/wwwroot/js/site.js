@@ -11,23 +11,10 @@ $(document).ready(function () {
     //Configurações do DataTable
     $.fn.dataTable.moment('DD/MM/YYYY');
 
-    function initializeDataTable(tableSelector) {
-        $(tableSelector).DataTable({
-            language: {
-                url: '/lib/DataTables/pt-BR.json'
-            }
-        });
-    }
-
-    initializeDataTable('#data-table');
-    initializeDataTable('.tab-pane.active table');
-
-    // Evento de troca de abas
-    $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-        var targetId = $(e.target).attr('data-bs-target');
-        var table = $(targetId).find('table');
-        if (!$.fn.dataTable.isDataTable(table)) {
-            initializeDataTable(table);
+    // DataTable padrão
+    $('#data-table').DataTable({
+        language: {
+            url: '/lib/DataTables/pt-BR.json'
         }
     });
 
@@ -153,3 +140,28 @@ setupModal('.btn-user-delete', 'Users', 'Delete', 'user-id', 'modalUserDelete', 
 
 // Modais da view Profile
 setupModal('.btn-user-password', 'Account', 'ResetPassword', 'user-id', 'modalUserPassword', 'userPassword');
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Adiciona evento de clique para o botão de expandir/recolher
+    document.querySelectorAll(".btn-toggle-category").forEach(button => {
+        button.addEventListener("click", function () {
+            const category = this.getAttribute("data-category");
+            const rows = document.querySelectorAll(`tr[data-category="${category}"]`);
+            const icon = this.querySelector("i");
+
+            rows.forEach(row => {
+                row.style.display = row.style.display === "none" ? "" : "none";
+            });
+
+            // Alterna o ícone entre "+" e "-"
+            if (icon.classList.contains("fa-plus")) {
+                icon.classList.remove("fa-plus");
+                icon.classList.add("fa-minus");
+            } else {
+                icon.classList.remove("fa-minus");
+                icon.classList.add("fa-plus");
+            }
+        });
+    });
+});

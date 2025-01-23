@@ -52,8 +52,15 @@ namespace LinkHub.Controllers
             }
 
             List<Link> links = await _linkRepository.GetLinksPerUserAsync(userId);
+            List<Page> pages = await _pageRepository.GetPagePerUserAsync(userId);
 
-            return View(links);
+            var linkIndexViewModel = new LinkIndexViewModel
+            {
+                Pages = pages,
+                Links = links
+            };
+
+            return View(linkIndexViewModel);
         }
 
         [HttpGet]

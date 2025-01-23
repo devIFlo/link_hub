@@ -31,6 +31,7 @@ namespace LinkHub.Repositories
             return await _context.Pages
                 .Where(p => _context.UserPagePermissions
                     .Any(upp => upp.PageId == p.Id && upp.UserId == userId))
+                .OrderBy(p => p.Name)
                 .ToListAsync();
         }
 

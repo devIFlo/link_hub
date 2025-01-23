@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Link>
+﻿@model LinkIndexViewModel
 
 @{
     ViewData["Title"] = "Links";
@@ -17,16 +17,19 @@
 <div id="tabsContainer">
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            @foreach (var tab in Model)
+            @if (Model.Pages != null)
             {
-                string active = countTab == 0 ? "active" : "";
-                string pageName = tab.Category.Page.Name;
+                foreach (var tab in Model.Pages)
+                {
+                    string active = countTab == 0 ? "active" : "";
+                    string pageName = tab.Name;
 
-                <button class="nav-link @active" id="nav-@pageName.Replace(" ", "")-tab" data-bs-toggle="tab" data-bs-target="#nav-@pageName.Replace(" ", "")" type="button" role="tab" aria-controls="nav-@pageName.Replace(" ", "")" aria-selected="false">
-                    @pageName
-                </button>
+                    <button class="nav-link @active" id="nav-@pageName.Replace(" ", "")-tab" data-bs-toggle="tab" data-bs-target="#nav-@pageName.Replace(" ", "")" type="button" role="tab" aria-controls="nav-@pageName.Replace(" ", "")" aria-selected="false">
+                        @pageName
+                    </button>
 
-                countTab++;
+                    countTab++;
+                }
             }
         </div>
     </nav>
@@ -35,70 +38,88 @@
 
 <div id="tabContents">
     <div class="tab-content" id="nav-tabContent">
-        @foreach (var tab in Model)
+        @if (Model.Pages != null)
         {
-            string active = countContent == 0 ? "active show" : "";
-            string pageName = tab.Category.Page.Name;
+            foreach (var tab in Model.Pages)
+            {
+                string active = countContent == 0 ? "active show" : "";
+                string pageName = tab.Name;
 
-            <div class="tab-pane fade @active" id="nav-@pageName.Replace(" ", "")" role="tabpanel" aria-labelledby="nav-@pageName.Replace(" ", "")-tab">
-                <div id="categoryLinks-@pageName.Replace(" ", "")">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-hover" style="width:100%">
-                            <thead class="table-success">
-                                <tr>
-                                    <th class="text-center">
-                                        @Html.DisplayNameFor(model => model.Name)
-                                    </th>
-                                    <th class="text-center">
-                                        @Html.DisplayNameFor(model => model.Url)
-                                    </th>
-                                    <th class="text-center">
-                                        @Html.DisplayNameFor(model => model.Category)
-                                    </th>
-                                    <th class="text-center">
-                                        Ações
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var link in Model)
-                                {
-                                    if (link.Category != null && link.Category.Page.Name == pageName)
-                                    {
-                                        <tr>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => link.Name)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => link.Url)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => link.Category.Name)
-                                            </td>
-                                            <td class="text-center">
-                                                <a href="javascript:" link-id="@link.Id" class="btn btn-secondary btn-link-details">
-                                                    <i class="fa-solid fa-circle-info"></i>
-                                                    <span class="d-none d-sm-inline">Detalhes</span>
-                                                </a>
-                                                <a href="javascript:" link-id="@link.Id" class="btn btn-primary btn-link-edit">
-                                                    <i class="fa-regular fa-pen-to-square"></i>
-                                                    <span class="d-none d-sm-inline">Editar</span>
-                                                </a>
-                                                <a href="javascript:" link-id="@link.Id" class="btn btn-danger btn-link-remove">
-                                                    <i class="fa-regular fa-trash-can"></i>
-                                                    <span class="d-none d-sm-inline">Remover</span>
-                                                </a>
-                                            </td>
-                                        </tr>
+                <div class="tab-pane fade @active" id="nav-@pageName.Replace(" ", "")" role="tabpanel" aria-labelledby="nav-@pageName.Replace(" ", "")-tab">
+                    <div id="categoryLinks-@pageName.Replace(" ", "")">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" style="width:100%">
+                                <thead class="table-success">
+                                    <tr>
+                                        <th class="text-center" colspan="4">
+                                            CATEGORIAS
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+          
+                                    @{
+                                        string currentCategory = null;
                                     }
-                                }
-                            </tbody>
-                        </table>
+                                    @foreach (var link in Model.Links)
+                                    {
+                                        if (link.Category != null && link.Category.Page.Name == pageName)
+                                        {
+                                            if (currentCategory != link.Category.Name)
+                                            {
+                                                currentCategory = link.Category.Name;                                               
+                                                <tr class="category-header">
+                                                    <td td class="fw-bold bg-light" colspan="4">
+                                                        <button type="button" class="btn btn-sm btn-toggle-category" data-category="@currentCategory">
+                                                            <i class="fa-solid fa-plus"></i>
+                                                        </button>
+                                                        @currentCategory
+                                                    </td>
+                                                </tr>
+                                                <tr data-category="@currentCategory" style="display: none;">
+                                                    <th class="text-center">
+                                                        @Html.DisplayNameFor(model => model.Name)
+                                                    </th>
+                                                    <th class="text-center">
+                                                        @Html.DisplayNameFor(model => model.Url)
+                                                    </th>
+                                                    <th class="text-center">
+                                                        Ações
+                                                    </th>
+                                                </tr>
+                                            }
+                                            <tr data-category="@currentCategory" style="display: none;">
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => link.Name)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => link.Url)
+                                                </td>
+                                                <td class="text-center">
+                                                    <a href="javascript:" link-id="@link.Id" class="btn btn-secondary btn-link-details">
+                                                        <i class="fa-solid fa-circle-info"></i>
+                                                        <span class="d-none d-sm-inline">Detalhes</span>
+                                                    </a>
+                                                    <a href="javascript:" link-id="@link.Id" class="btn btn-primary btn-link-edit">
+                                                        <i class="fa-regular fa-pen-to-square"></i>
+                                                        <span class="d-none d-sm-inline">Editar</span>
+                                                    </a>
+                                                    <a href="javascript:" link-id="@link.Id" class="btn btn-danger btn-link-remove">
+                                                        <i class="fa-regular fa-trash-can"></i>
+                                                        <span class="d-none d-sm-inline">Remover</span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            countContent++;
+                countContent++;
+            }
         }
     </div>
 </div>
