@@ -11,12 +11,27 @@ $(document).ready(function () {
     //Configurações do DataTable
     $.fn.dataTable.moment('DD/MM/YYYY');
 
-    $('#data-table').DataTable({
-        language: {
-            url: '/lib/DataTables/pt-BR.json'
+    function initializeDataTable(tableSelector) {
+        $(tableSelector).DataTable({
+            language: {
+                url: '/lib/DataTables/pt-BR.json'
+            }
+        });
+    }
+
+    initializeDataTable('#data-table');
+    initializeDataTable('.tab-pane.active table');
+
+    // Evento de troca de abas
+    $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var targetId = $(e.target).attr('data-bs-target');
+        var table = $(targetId).find('table');
+        if (!$.fn.dataTable.isDataTable(table)) {
+            initializeDataTable(table);
         }
     });
 
+    // DataTable da página de Logs
     $('#data-table-logs').DataTable({
         language: {
             url: '/lib/DataTables/pt-BR.json'
@@ -118,7 +133,6 @@ function setupModal(btn, controller, action, attrId, modal, content) {
 setupModal('.btn-link-add', 'Links', 'Create', '', 'modalLinkCreate', 'linkCreate');
 setupModal('.btn-link-edit', 'Links', 'Edit', 'link-id', 'modalLinkEdit', 'linkEdit');
 setupModal('.btn-link-remove', 'Links', 'Delete', 'link-id', 'modalLinkDelete', 'linkDelete');
-setupModal('.btn-link-home', 'Links', 'Home', 'link-id', 'modalLinkHome', 'linkHome');
 setupModal('.btn-link-details', 'Links', 'Details', 'link-id', 'modalLinkDetails', 'linkDetails');
 
 // Modais da view Categories

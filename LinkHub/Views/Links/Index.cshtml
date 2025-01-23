@@ -2,6 +2,9 @@
 
 @{
     ViewData["Title"] = "Links";
+
+    int countTab = 0;
+    int countContent = 0;
 }
 
 <div class="d-flex justify-content-between align-items-center">
@@ -11,57 +14,93 @@
     </a>
 </div>
 
-<div class="table-responsive">
-    <table id="data-table" class="table table-striped table-bordered table-hover" style="width:100%">
-        <thead class="table-success">
-            <tr>
-                <th class="text-center">
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                <th class="text-center">
-                    @Html.DisplayNameFor(model => model.Url)
-                </th>
-                <th class="text-center">
-                    Ações
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var link in Model)
+<div id="tabsContainer">
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            @foreach (var tab in Model)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => link.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => link.Url)
-                    </td>
-                    <td class="text-center">
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <a href="javascript:" link-id="@link.Id" class="btn btn-warning btn-link-home">
-                                <i class="fa-solid fa-home"></i>
-                                <span class="d-none d-sm-inline">Home</span>
-                            </a>
+                string active = countTab == 0 ? "active" : "";
+                string pageName = tab.Category.Page.Name;
 
-                        }
-                        <a href="javascript:" link-id="@link.Id" class="btn btn-secondary btn-link-details">
-                            <i class="fa-solid fa-circle-info"></i>
-                            <span class="d-none d-sm-inline">Detalhes</span>
-                        </a>
-                        <a href="javascript:" link-id="@link.Id" class="btn btn-primary btn-link-edit">
-                            <i class="fa-regular fa-pen-to-square"></i>
-                            <span class="d-none d-sm-inline">Editar</span>
-                        </a>
-                        <a href="javascript:" link-id="@link.Id" class="btn btn-danger btn-link-remove">
-                            <i class="fa-regular fa-trash-can"></i>
-                            <span class="d-none d-sm-inline">Remover</span>
-                        </a>
-                    </td>
-                </tr>
+                <button class="nav-link @active" id="nav-@pageName.Replace(" ", "")-tab" data-bs-toggle="tab" data-bs-target="#nav-@pageName.Replace(" ", "")" type="button" role="tab" aria-controls="nav-@pageName.Replace(" ", "")" aria-selected="false">
+                    @pageName
+                </button>
+
+                countTab++;
             }
-        </tbody>
-    </table>
+        </div>
+    </nav>
+    <br />
+</div>
+
+<div id="tabContents">
+    <div class="tab-content" id="nav-tabContent">
+        @foreach (var tab in Model)
+        {
+            string active = countContent == 0 ? "active show" : "";
+            string pageName = tab.Category.Page.Name;
+
+            <div class="tab-pane fade @active" id="nav-@pageName.Replace(" ", "")" role="tabpanel" aria-labelledby="nav-@pageName.Replace(" ", "")-tab">
+                <div id="categoryLinks-@pageName.Replace(" ", "")">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover" style="width:100%">
+                            <thead class="table-success">
+                                <tr>
+                                    <th class="text-center">
+                                        @Html.DisplayNameFor(model => model.Name)
+                                    </th>
+                                    <th class="text-center">
+                                        @Html.DisplayNameFor(model => model.Url)
+                                    </th>
+                                    <th class="text-center">
+                                        @Html.DisplayNameFor(model => model.Category)
+                                    </th>
+                                    <th class="text-center">
+                                        Ações
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var link in Model)
+                                {
+                                    if (link.Category != null && link.Category.Page.Name == pageName)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => link.Name)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => link.Url)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => link.Category.Name)
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="javascript:" link-id="@link.Id" class="btn btn-secondary btn-link-details">
+                                                    <i class="fa-solid fa-circle-info"></i>
+                                                    <span class="d-none d-sm-inline">Detalhes</span>
+                                                </a>
+                                                <a href="javascript:" link-id="@link.Id" class="btn btn-primary btn-link-edit">
+                                                    <i class="fa-regular fa-pen-to-square"></i>
+                                                    <span class="d-none d-sm-inline">Editar</span>
+                                                </a>
+                                                <a href="javascript:" link-id="@link.Id" class="btn btn-danger btn-link-remove">
+                                                    <i class="fa-regular fa-trash-can"></i>
+                                                    <span class="d-none d-sm-inline">Remover</span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            countContent++;
+        }
+    </div>
 </div>
 
 @* Modal Link Create *@
@@ -87,15 +126,6 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div id="linkDelete"></div>
-        </div>
-    </div>
-</div>
-
-@* Modal Link HomeView *@
-<div class="modal fade" id="modalLinkHome" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div id="linkHome"></div>
         </div>
     </div>
 </div>

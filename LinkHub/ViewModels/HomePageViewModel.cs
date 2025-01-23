@@ -6,6 +6,5 @@ namespace LinkHub.ViewModels
     {
         public IEnumerable<Link>? Links { get; set; }
         public IEnumerable<Category>? Categories { get; set; }
-        public IEnumerable<Link>? HomePageLinks { get; set; }
     }
 }

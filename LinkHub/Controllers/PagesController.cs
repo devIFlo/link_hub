@@ -13,16 +13,19 @@ namespace LinkHub.Controllers
     public class PagesController : Controller
     {
         private readonly IPageRepository _pageRepository;
-        private readonly IUserPagePermissionRepository _userPagePermissionRepository;
+		private readonly ICategoryRepository _categoryRepository;
+		private readonly IUserPagePermissionRepository _userPagePermissionRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly INotyfService _notyfService;
 
         public PagesController(IPageRepository pageRepository,
-            UserManager<ApplicationUser> userManager,
+			ICategoryRepository categoryRepository,
+			UserManager<ApplicationUser> userManager,
             IUserPagePermissionRepository userPagePermissionRepository,
             INotyfService notyfService)
         {
             _pageRepository = pageRepository;
+            _categoryRepository = categoryRepository;
             _userManager = userManager;
             _userPagePermissionRepository = userPagePermissionRepository;
             _notyfService = notyfService;
@@ -53,7 +56,15 @@ namespace LinkHub.Controllers
 
             try
             {
-                await _pageRepository.Add(page);
+                await _pageRepository.AddAsync(page);
+
+				var category = new Category
+				{
+					Name = "Home",
+					PageId = page.Id
+				};
+
+				await _categoryRepository.AddAsync(category);
                 _notyfService.Success("Página adicionada com sucesso.");
             }
             catch (Exception ex)

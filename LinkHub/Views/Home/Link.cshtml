@@ -9,14 +9,13 @@
     <div id="tabsContainer">
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">
-                    Home
-                </button>
                 @if (Model.Categories != null)
                 {
                     foreach (var tab in Model.Categories)
                     {
-                        <button class="nav-link" id="nav-@tab.Name.Replace(" ", "")-tab" data-bs-toggle="tab" data-bs-target="#nav-@tab.Name.Replace(" ", "")" type="button" role="tab" aria-controls="nav-@tab.Name.Replace(" ", "")" aria-selected="false">
+                        string active = tab.Name == "Home" ? "active" : "";
+                               
+                        <button class="nav-link @active" id="nav-@tab.Name.Replace(" ", "")-tab" data-bs-toggle="tab" data-bs-target="#nav-@tab.Name.Replace(" ", "")" type="button" role="tab" aria-controls="nav-@tab.Name.Replace(" ", "")" aria-selected="false">
                             @tab.Name
                         </button>
                     }
@@ -28,33 +27,14 @@
 
     <div id="tabContents">
         <div class="tab-content" id="nav-tabContent">
-            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4" id="homeLinks">
-                    @if (Model.HomePageLinks != null)
-                    {
-                        foreach (var link in Model.HomePageLinks)
-                        {
-                            <div class="col link-item">
-                                <a href="@link.Url" target="_blank">
-                                    <div class="card-link h-100">
-                                        <img src="/images/@link.FileName" class="card-img-top" alt="...">
-                                        <div class="card-link-body">
-                                            <h5 class="card-title">@link.Name</h5>
-                                            <p class="card-text">@link.Description</p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        }
-                    }
-                </div>
-            </div>
-
             @if (Model.Categories != null)
             {
                 foreach (var tab in Model.Categories)
                 {
-                    <div class="tab-pane fade" id="nav-@tab.Name.Replace(" ", "")" role="tabpanel" aria-labelledby="nav-@tab.Name.Replace(" ", "")-tab">
+                    string active = tab.Name == "Home" ? "active show" : "";
+
+                    <div class="tab-pane fade @active" id="nav-@tab.Name.Replace(" ", "")" role="tabpanel" aria-labelledby="nav-@tab.Name.Replace(" ", "")-tab">
+
                         <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4" id="categoryLinks-@tab.Name.Replace(" ", "")">
                             @if (Model.Links != null)
                             {

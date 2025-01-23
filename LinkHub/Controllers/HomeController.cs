@@ -43,19 +43,27 @@ namespace LinkHub.Controllers
         public async Task<IActionResult> Link(string page)
         {
             var categories = await _categoryRepository.GetCategoriesPerPageAsync(page);
+            if (categories.Count == 0) {
+				return RedirectToAction("PageNotFound", "Home");
+			}
+
             var links = await _linkRepository.GetLinksPerPageAsync(page);
-            var homePageLinks = await _linkRepository.GetLinksForHomePageAsync(page);
 
             var homePageViewModel = new HomePageViewModel
             {
                 Categories = categories,
-                Links = links,
-                HomePageLinks = homePageLinks
+                Links = links
             };
 
             ViewData["Page"] = page.ToUpper();
 
             return View(homePageViewModel);
+        }
+
+        [HttpGet]
+        public IActionResult PageNotFound()
+        {
+            return View();
         }
     }
 }

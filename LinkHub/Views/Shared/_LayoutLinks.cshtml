@@ -15,18 +15,44 @@
         <nav class="navbar navbar-expand-sm navbar-light bg-success border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <div class="d-flex w-100 justify-content-between align-items-center">
-                    <div class="mx-auto text-center">
+                    <div>
                         <h3 class="text-white">
-                            LinkHub - @ViewData["Page"]
+                            LinkHub
                         </h3>
                     </div>
-                    <div>
-                        <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar..." onkeyup="filterLinks()" />                        
+                    <div class="mx-auto text-center">
+                        <h3 class="text-white">
+                            @ViewData["Page"]
+                        </h3>
+                    </div>
+                    <div class="me-2">
+                        <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar..." onkeyup="filterLinks()" />
                     </div>
                     <div>
-                        <a class="nav-link text-white" asp-area="" asp-controller="Account" asp-action="Login">
-                            <i class="fas fa-sign-out-alt"></i> Entrar
-                        </a>
+                        @if (Context.Items["FullName"] != null)
+                        {
+                            <div class="dropdown">
+                                <a class="dropdown-toggle text-white" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                    @Context.Items["FullName"]
+                                </a>
+
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <li><a class="dropdown-item" asp-controller="Home" asp-action="Index">Admin</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile">Perfil</a></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
+                                            <button type="submit" class="dropdown-item">Sair</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <a class="nav-link text-white" asp-area="" asp-controller="Account" asp-action="Login">
+                                <i class="fas fa-sign-out-alt"></i> Entrar
+                            </a>
+                        }
                     </div>
                 </div>
             </div>

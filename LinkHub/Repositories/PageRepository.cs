@@ -34,7 +34,7 @@ namespace LinkHub.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Page> Add(Page page)
+        public async Task<Page> AddAsync(Page page)
         {
             _context.Pages.Add(page);
             await _context.SaveChangesAsync();

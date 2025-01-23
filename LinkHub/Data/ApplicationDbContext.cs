@@ -12,7 +12,6 @@ namespace LinkHub.Data
         public DbSet<LdapSettings> LdapSettings { get; set; }
         public DbSet<UserPagePermission> UserPagePermissions { get; set; }
         public DbSet<LogEntry> Logs { get; set; }
-        public DbSet<HomePage> HomePages { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
