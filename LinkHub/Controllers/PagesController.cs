@@ -54,6 +54,13 @@ namespace LinkHub.Controllers
                 return RedirectToAction("Index");
             }
 
+            var existingPage = await _pageRepository.GetPagePerNameAsync(page.Name);
+            if (existingPage != null)
+            {
+                _notyfService.Warning("Já existe uma página com este nome.");
+                return RedirectToAction("Index");
+            }
+
             try
             {
                 await _pageRepository.AddAsync(page);

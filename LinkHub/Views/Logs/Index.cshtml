@@ -47,7 +47,7 @@
             {
                 @foreach (var log in Model.LogEntries)
                 {
-                    <tr>
+                    <tr class="bg-light">
                         <td>@log.Timestamp?.ToString("dd/MM/yyyy")</td>
 
                         @if (log.Level == 2)

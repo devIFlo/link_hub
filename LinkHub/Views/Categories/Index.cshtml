@@ -1,7 +1,10 @@
-﻿@model IEnumerable<Category>
+﻿@model CategoryIndexViewModel
 
 @{
     ViewData["Title"] = "Categorias";
+
+    int countTab = 0;
+    int countContent = 0;
 }
 
 
@@ -13,48 +16,83 @@
     </a>
 </div>
 
-<div class="table-responsive">
-    <table id="data-table" class="table table-striped table-bordered table-hover text-center" style="width:100%">
-        <thead class="table-success">
-            <tr>
-                <th class="text-center">
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                <th class="text-center">
-                    @Html.DisplayNameFor(model => model.Page)
-                </th>
-                <th class="text-center">
-                    Ações
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
+<div id="tabsContainer">
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            @if (Model.Pages != null)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Name)
-                    </td>
-                    <td>
-                        @if (item.Page != null && item.Page.Name != null)
-                        {
-                            @Html.DisplayFor(modelItem => item.Page.Name)
-                        }
-                    </td>
-                    <td>
-                        <a href="javascript:" category-id="@item.Id" class="btn btn-primary btn-category-edit">
-                            <i class="fa-regular fa-pen-to-square"></i>
-                            <span class="d-none d-sm-inline">Editar</span>
-                        </a>
-                        <a href="javascript:" category-id="@item.Id" class="btn btn-danger btn-category-remove">
-                            <i class="fa-regular fa-trash-can"></i>
-                            <span class="d-none d-sm-inline">Remover</span>
-                        </a>
-                    </td>
-                </tr>
+                foreach (var tab in Model.Pages)
+                {
+                    string active = countTab == 0 ? "active" : "";
+                    string pageName = tab.Name;
+
+                    <button class="nav-link @active" id="nav-@pageName.Replace(" ", "")-tab" data-bs-toggle="tab" data-bs-target="#nav-@pageName.Replace(" ", "")" type="button" role="tab" aria-controls="nav-@pageName.Replace(" ", "")" aria-selected="false">
+                        @pageName
+                    </button>
+
+                    countTab++;
+                }
             }
-        </tbody>
-    </table>
+        </div>
+    </nav>
+    <br />
+</div>
+
+<div id="tabContents">
+    <div class="tab-content" id="nav-tabContent">
+        @if (Model.Pages != null)
+        {
+            foreach (var tab in Model.Pages)
+            {
+                string active = countContent == 0 ? "active show" : "";
+                string pageName = tab.Name;
+
+                <div class="tab-pane fade @active" id="nav-@pageName.Replace(" ", "")" role="tabpanel" aria-labelledby="nav-@pageName.Replace(" ", "")-tab">
+                    <div id="categoryLinks-@pageName.Replace(" ", "")">
+                        <div class="table-responsive table-categories">
+                            <table id="data-table-@pageName" class="table table-bordered table-hover text-center" style="width:100%">
+                                <thead class="table-success">
+                                    <tr>
+                                        <th class="text-center">
+                                            @Html.DisplayNameFor(model => model.Name)
+                                        </th>
+                                        <th class="text-center">
+                                            Ações
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Categories)
+                                    {
+                                        if (item.Page != null && item.Page.Name == pageName)
+                                        {
+                                            <tr class="bg-light">
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Name)
+                                                </td>
+                                                <td>
+                                                    <a href="javascript:" category-id="@item.Id" class="btn btn-primary btn-category-edit">
+                                                        <i class="fa-regular fa-pen-to-square"></i>
+                                                        <span class="d-none d-sm-inline">Editar</span>
+                                                    </a>
+                                                    <a href="javascript:" category-id="@item.Id" class="btn btn-danger btn-category-remove">
+                                                        <i class="fa-regular fa-trash-can"></i>
+                                                        <span class="d-none d-sm-inline">Remover</span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                countContent++;
+            }            
+        }
+    </div>
 </div>
 
 @* Modal Category Create *@

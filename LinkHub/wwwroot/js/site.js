@@ -11,10 +11,23 @@ $(document).ready(function () {
     //Configurações do DataTable
     $.fn.dataTable.moment('DD/MM/YYYY');
 
-    // DataTable padrão
-    $('#data-table').DataTable({
-        language: {
-            url: '/lib/DataTables/pt-BR.json'
+    function initializeDataTable(tableSelector) {
+        $(tableSelector).DataTable({
+            language: {
+                url: '/lib/DataTables/pt-BR.json'
+            }
+        });
+    }
+
+    initializeDataTable('#data-table');
+    initializeDataTable('.tab-pane.active .table-categories table');
+
+    // Evento de troca de abas
+    $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var targetId = $(e.target).attr('data-bs-target');
+        var table = $(targetId).find('.table-categories table');
+        if (!$.fn.dataTable.isDataTable(table)) {
+            initializeDataTable(table);
         }
     });
 
@@ -25,6 +38,7 @@ $(document).ready(function () {
         },
         order: [[0, 'desc']]
     });
+       
 
     //Prepara a modal para utilizar o select2
     function initModalSelect(modalId) {
@@ -41,6 +55,19 @@ $(document).ready(function () {
     initModalSelect('#modalPagePermission');
     initModalSelect('#modalLinkHome');
 });
+
+// Função para validar a imagem
+function validateImage(event) {
+    const file = event.target.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/bmp', 'image/webp'];
+
+    if (!allowedTypes.includes(file.type)) {
+        alert('Por favor, selecione um arquivo de imagem válido (JPEG, PNG, BMP ou WebP).');
+        event.target.value = '';
+    } else {
+        previewImage(event);
+    }
+}
 
 // Função para exibir um preview da imagem escolhida
 function previewImage(event) {
@@ -143,13 +170,14 @@ setupModal('.btn-user-password', 'Account', 'ResetPassword', 'user-id', 'modalUs
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    // Adiciona evento de clique para o botão de expandir/recolher
-    document.querySelectorAll(".btn-toggle-category").forEach(button => {
-        button.addEventListener("click", function () {
+    // Adiciona evento de clique para cada linha de cabeçalho de categoria
+    document.querySelectorAll(".category-header").forEach(header => {
+        header.addEventListener("click", function () {
             const category = this.getAttribute("data-category");
-            const rows = document.querySelectorAll(`tr[data-category="${category}"]`);
-            const icon = this.querySelector("i");
+            const rows = document.querySelectorAll(`.category-item[data-category="${category}"]`);
+            const icon = this.querySelector(".btn-toggle-category i");
 
+            // Alterna a visibilidade das linhas pertencentes à categoria
             rows.forEach(row => {
                 row.style.display = row.style.display === "none" ? "" : "none";
             });

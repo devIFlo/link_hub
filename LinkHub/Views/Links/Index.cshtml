@@ -57,7 +57,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-          
                                     @{
                                         string currentCategory = null;
                                     }
@@ -68,15 +67,15 @@
                                             if (currentCategory != link.Category.Name)
                                             {
                                                 currentCategory = link.Category.Name;                                               
-                                                <tr class="category-header">
+                                                <tr class="category-header" data-category="@currentCategory">
                                                     <td td class="fw-bold bg-light" colspan="4">
-                                                        <button type="button" class="btn btn-sm btn-toggle-category" data-category="@currentCategory">
+                                                        <button type="button" class="btn btn-sm btn-toggle-category">
                                                             <i class="fa-solid fa-plus"></i>
                                                         </button>
                                                         @currentCategory
                                                     </td>
                                                 </tr>
-                                                <tr data-category="@currentCategory" style="display: none;">
+                                                <tr data-category="@currentCategory" class="category-item bg-light" style="display: none;">
                                                     <th class="text-center">
                                                         @Html.DisplayNameFor(model => model.Name)
                                                     </th>
@@ -88,7 +87,7 @@
                                                     </th>
                                                 </tr>
                                             }
-                                            <tr data-category="@currentCategory" style="display: none;">
+                                            <tr data-category="@currentCategory" class="category-item bg-white" style="display: none;">
                                                 <td>
                                                     @Html.DisplayFor(modelItem => link.Name)
                                                 </td>

@@ -43,8 +43,16 @@ namespace LinkHub.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var categories = await _categoryRepository.GetCategoriesPerUserAsync(userId);
-            return View(categories);
+            List<Category> categories = await _categoryRepository.GetCategoriesPerUserAsync(userId);
+            List<Page> pages = await _pageRepository.GetPagePerUserAsync(userId);
+
+            var categoryIndexViewModel = new CategoryIndexViewModel
+            {
+                Categories = categories,
+                Pages = pages
+            };
+
+            return View(categoryIndexViewModel);
         }
 
         [HttpGet]

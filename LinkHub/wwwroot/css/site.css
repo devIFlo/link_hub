@@ -137,3 +137,21 @@ a {
     border-top: 1px solid #ddd;
     padding-top: 1.25rem;
 }
+
+.dt-search input {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 4px !important;
+    padding: 5px 10px !important;
+}
+
+.dt-search input:focus {
+    border-color: #06742b !important;
+    box-shadow: 0 0 5px rgba(144, 238, 144, 0.5) !important;
+    outline: none !important;
+}
+
+.dt-input {
+    background-color: #f8f9fa !important;
+}

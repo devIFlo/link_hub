@@ -21,6 +21,11 @@ namespace LinkHub.Repositories
             return await _context.Pages.FirstOrDefaultAsync(p => p.Id == id);
         }
 
+        public async Task<Page?> GetPagePerNameAsync(string name)
+        {
+            return await _context.Pages.FirstOrDefaultAsync(p => p.Name.ToLower() == name.ToLower());
+        }
+
         public List<Page> GetPages()
         {
             return _context.Pages.ToList();

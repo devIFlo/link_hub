@@ -40,7 +40,7 @@
             <div class="form-group">
                 <label asp-for="Image" class="control-label"></label>
                 <div class="mb-3">
-                    <input asp-for="Image" class="form-control" type="file" accept="image/jpeg, image/png, image/bmp, image/webp" id ="formFile" onchange="previewImage(event)">
+                    <input asp-for="Image" class="form-control" type="file" accept="image/jpeg, image/png, image/bmp, image/webp" id="formFile" onchange="validateImage(event)">
                 </div>
                 <img id="imagePreview" class="card-img-top" />
                 <p class="text-danger text-end">Formatos aceitos: jpg, png, bmp ou webp</p>

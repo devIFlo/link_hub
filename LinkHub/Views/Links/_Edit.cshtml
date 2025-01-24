@@ -42,7 +42,7 @@
             <div class="form-group">
                 <label asp-for="Image" class="control-label"></label>
                 <div class="mb-3">
-                    <input asp-for="Image" class="form-control" type="file" accept="image/jpeg, image/png, image/bmp, image/webp" id="formFile" onchange="previewImage(event)">
+                    <input asp-for="Image" class="form-control" type="file" accept="image/jpeg, image/png, image/bmp, image/webp" id="formFile" onchange="validateImage(event)">
                 </div>
                 <span asp-validation-for="Image" class="text-danger"></span>
             </div>
